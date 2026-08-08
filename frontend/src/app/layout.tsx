@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Personalized AI Agent — Next.js SDUI Chat",
-  description: "Full-Stack AI system using LangGraph SSE streaming & Server-Driven UI widgets",
+  title: "Athena AI | Personalized AI Agent",
+  description: "Athena AI is a personalized AI assistant that learns from your behavior and preferences. Powered by LangGraph and Server-Driven UI.",
 };
 
 export default function RootLayout({
