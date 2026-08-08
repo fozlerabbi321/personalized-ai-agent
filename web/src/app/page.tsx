@@ -12,7 +12,7 @@ export default function HomePage() {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-[#090d16] text-gray-300 gap-3 text-sm font-medium">
         <Spinner className="h-6 w-6 text-indigo-500" />
-        <span>Initializing Aria AI...</span>
+        <span>Initializing Athena AI...</span>
       </div>
     );
   }

@@ -9,6 +9,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.config import settings
 from app.agent.state import AgentState
+from app.agent.prompts import build_athena_chart_analysis_prompt
 from app.core.utils import extract_text
 
 _llm = ChatGoogleGenerativeAI(
@@ -111,13 +112,8 @@ async def api_call_node(state: AgentState) -> dict:
         "7_day_low":      widget_data["seven_day_low"],
     }
 
-    analysis_prompt = (
-        "You are a friendly financial analyst. Based on this simulated stock data "
-        "(for educational and demonstration purposes only), provide a clear, brief "
-        "2–3 sentence analysis. Mention the current price, the recent trend, and one "
-        "simple observation. Do NOT add disclaimers about it being mock data.\n\n"
-        f"Data:\n{json.dumps(data_summary, indent=2)}"
-    )
+    all_messages = state.get("messages", [])
+    analysis_prompt = build_athena_chart_analysis_prompt(ticker, data_summary, all_messages)
 
     response = await _llm.ainvoke([HumanMessage(content=analysis_prompt)])
     response_text = extract_text(response.content).strip()

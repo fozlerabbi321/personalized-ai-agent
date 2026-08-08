@@ -5,6 +5,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.config import settings
 from app.agent.state import AgentState
+from app.agent.prompts import build_athena_router_prompt
 from app.core.utils import extract_text
 
 # Shared LLM instance — temperature=0 for deterministic routing
@@ -14,19 +15,6 @@ _llm = ChatGoogleGenerativeAI(
     temperature=0,
 )
 
-_ROUTER_SYSTEM = """\
-You are an intent classifier for an AI assistant. Analyze the user's message and return EXACTLY one word.
-
-Classify as:
-- "api_call"  → user asks about stock prices, crypto prices, financial data, OHLC charts, market data, or any real-time financial metric
-- "summary"   → user explicitly asks to summarize, recap, or review the conversation
-- "general"   → everything else: coding help, questions, explanations, general conversation
-
-Rules:
-• Return ONLY one of the three exact lowercase words above.
-• No punctuation, no explanation, no surrounding quotes.\
-"""
-
 
 async def llm_decision_node(state: AgentState) -> dict:
     """
@@ -34,11 +22,14 @@ async def llm_decision_node(state: AgentState) -> dict:
     This node's LLM tokens are intentionally NOT streamed to the client
     (filtered by langgraph_node metadata in the SSE endpoint).
     """
-    last_msg = state["messages"][-1] if state.get("messages") else None
+    messages = state.get("messages", [])
+    last_msg = messages[-1] if messages else None
     last_message = extract_text(last_msg.content) if last_msg else ""
 
+    router_prompt = build_athena_router_prompt(messages)
+
     response = await _llm.ainvoke([
-        SystemMessage(content=_ROUTER_SYSTEM),
+        SystemMessage(content=router_prompt),
         HumanMessage(content=f"User message: {last_message}"),
     ])
 
@@ -50,3 +41,4 @@ async def llm_decision_node(state: AgentState) -> dict:
         "intent": intent,
         "iteration_count": state.get("iteration_count", 0) + 1,
     }
+

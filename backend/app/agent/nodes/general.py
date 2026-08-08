@@ -5,6 +5,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.config import settings
 from app.agent.state import AgentState
+from app.agent.prompts import build_athena_system_prompt
 from app.core.utils import extract_text
 
 _llm = ChatGoogleGenerativeAI(
@@ -13,27 +14,17 @@ _llm = ChatGoogleGenerativeAI(
     temperature=0.7,
 )
 
-_SYSTEM_PROMPT = """\
-You are Aria — a helpful, knowledgeable, and friendly AI assistant.
-You provide clear, accurate, and thoughtful responses.
-
-Guidelines:
-- Be concise but thorough. Avoid unnecessary padding.
-- Use markdown formatting (code blocks, bullet points, bold) when it helps clarity.
-- If a user asks about stock prices or financial data, let them know you can fetch that
-  information — they just need to mention a ticker symbol (e.g., "AAPL stock price").
-- Be warm and approachable in tone.\
-"""
-
 
 async def general_response_node(state: AgentState) -> dict:
     """
-    Handle general queries with a direct Gemini response.
+    Handle general queries with a direct Gemini response as Athena.
     Tokens from this node ARE streamed to the client.
-    The full conversation history is passed to maintain context.
+    Athena's persona, dynamic tone rules, and chat history preferences are injected.
     """
-    # Prepend system message to the full conversation history
-    messages = [SystemMessage(content=_SYSTEM_PROMPT)] + list(state.get("messages", []))
+    raw_messages = list(state.get("messages", []))
+    system_prompt = build_athena_system_prompt(raw_messages)
+
+    messages = [SystemMessage(content=system_prompt)] + raw_messages
 
     response = await _llm.ainvoke(messages)
     response_text = extract_text(response.content).strip()
@@ -44,3 +35,4 @@ async def general_response_node(state: AgentState) -> dict:
         "widget_json":   None,
         "is_final":      True,
     }
+

@@ -14,8 +14,8 @@ interface MessageListProps {
 
 const SUGGESTED_PROMPTS = [
   {
-    title: "Stock Price & OHLC Chart",
-    prompt: "What is the AAPL stock price today?",
+    title: "Bitcoin Market & OHLC Chart",
+    prompt: "Show me BTC price and market analysis",
     icon: TrendingUp,
   },
   {
@@ -57,11 +57,11 @@ export function MessageList({
           <Sparkles className="h-7 w-7" />
         </div>
         <h2 className="text-xl font-bold text-white tracking-tight mb-2">
-          How can Aria help you today?
+          How can Athena help you today?
         </h2>
         <p className="text-xs text-gray-400 leading-relaxed mb-8">
-          Ask questions, explore stock market trends with Server-Driven UI charts,
-          or request summaries of your previous discussions.
+          Ask Bitcoin & crypto questions, analyze live market trends with interactive charts,
+          or get personalized trading insights.
         </p>
 
         {/* Prompt Suggestions */}

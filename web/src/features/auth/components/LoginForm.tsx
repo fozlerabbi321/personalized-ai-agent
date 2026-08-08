@@ -43,7 +43,7 @@ export function LoginForm() {
         </h1>
         <p className="text-xs text-gray-400 mt-1">
           {isRegistering
-            ? "Register to start chatting with Aria AI"
+            ? "Register to start chatting with Athena AI"
             : "Login to access your AI sessions & SDUI widgets"}
         </p>
       </div>

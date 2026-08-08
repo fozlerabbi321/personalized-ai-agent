@@ -36,7 +36,7 @@ export function InputBar({ onSend, disabled }: InputBarProps) {
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={disabled}
-            placeholder="Ask Aria anything... (e.g. AAPL stock price)"
+            placeholder="Ask Athena anything... (e.g. BTC price, market analysis)"
             className="w-full pl-4 pr-12 py-3 bg-gray-900/90 text-gray-100 text-sm rounded-2xl border border-gray-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-500 shadow-inner"
           />
 
@@ -56,7 +56,7 @@ export function InputBar({ onSend, disabled }: InputBarProps) {
       </div>
       <p className="text-[10px] text-center text-gray-500 mt-2 flex items-center justify-center gap-1">
         <Sparkles className="h-3 w-3 text-indigo-400" />
-        Aria streams dynamic Server-Driven UI (SDUI) widgets based on your query intent.
+        Athena streams dynamic Server-Driven UI (SDUI) widgets based on your query intent.
       </p>
     </div>
   );

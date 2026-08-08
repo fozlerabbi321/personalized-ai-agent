@@ -5,6 +5,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.config import settings
 from app.agent.state import AgentState
+from app.agent.prompts import build_athena_summary_prompt
 from app.core.utils import extract_text
 
 _llm = ChatGoogleGenerativeAI(
@@ -13,20 +14,10 @@ _llm = ChatGoogleGenerativeAI(
     temperature=0.2,
 )
 
-_SUMMARY_SYSTEM = """\
-You are a helpful assistant. The user has asked you to summarize the conversation so far.
-Create a clear, structured summary covering:
-  • Key topics discussed
-  • Important facts or data mentioned
-  • Any conclusions or decisions reached
-
-Keep it concise — use bullet points where appropriate.\
-"""
-
 
 async def summary_node(state: AgentState) -> dict:
     """
-    Summarize the full conversation history using Gemini.
+    Summarize the full conversation history using Gemini as Athena.
     Tokens from this node ARE streamed to the client.
     """
     messages = state.get("messages", [])
@@ -34,16 +25,17 @@ async def summary_node(state: AgentState) -> dict:
     # Format all messages except the current summary request
     conversation_parts: list[str] = []
     for msg in messages[:-1]:
-        role = "Human" if isinstance(msg, HumanMessage) else "Assistant"
+        role = "User" if isinstance(msg, HumanMessage) else "Athena"
         part_text = extract_text(msg.content)
         conversation_parts.append(f"{role}: {part_text}")
 
     if not conversation_parts:
-        response_text = "There's no previous conversation to summarize yet. Start chatting and I'll keep track!"
+        response_text = "There's no previous conversation to summarize yet. Start chatting with me and I'll keep track!"
     else:
         conversation_text = "\n\n".join(conversation_parts)
+        summary_prompt = build_athena_summary_prompt(messages)
         response = await _llm.ainvoke([
-            SystemMessage(content=_SUMMARY_SYSTEM),
+            SystemMessage(content=summary_prompt),
             HumanMessage(content=f"Conversation to summarize:\n\n{conversation_text}"),
         ])
         response_text = extract_text(response.content).strip()
@@ -54,3 +46,4 @@ async def summary_node(state: AgentState) -> dict:
         "widget_json":   None,
         "is_final":      True,
     }
+
