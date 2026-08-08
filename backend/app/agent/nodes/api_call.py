@@ -9,6 +9,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.config import settings
 from app.agent.state import AgentState
+from app.core.utils import extract_text
 
 _llm = ChatGoogleGenerativeAI(
     model=settings.GEMINI_MODEL,
@@ -97,7 +98,8 @@ async def api_call_node(state: AgentState) -> dict:
     (langgraph_node == 'api_call' passes the SSE filter).
     The `widget_json` is captured from the final graph state after streaming.
     """
-    last_message = state["messages"][-1].content if state["messages"] else ""
+    last_msg = state["messages"][-1] if state.get("messages") else None
+    last_message = extract_text(last_msg.content) if last_msg else ""
     ticker = _detect_ticker(last_message)
     widget_data = _generate_mock_ohlc(ticker)
 
@@ -118,7 +120,7 @@ async def api_call_node(state: AgentState) -> dict:
     )
 
     response = await _llm.ainvoke([HumanMessage(content=analysis_prompt)])
-    response_text = response.content.strip()
+    response_text = extract_text(response.content).strip()
 
     return {
         "messages":      [AIMessage(content=response_text)],

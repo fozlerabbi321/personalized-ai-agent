@@ -5,6 +5,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.config import settings
 from app.agent.state import AgentState
+from app.core.utils import extract_text
 
 _llm = ChatGoogleGenerativeAI(
     model=settings.GEMINI_MODEL,
@@ -35,7 +36,7 @@ async def general_response_node(state: AgentState) -> dict:
     messages = [SystemMessage(content=_SYSTEM_PROMPT)] + list(state.get("messages", []))
 
     response = await _llm.ainvoke(messages)
-    response_text = response.content.strip()
+    response_text = extract_text(response.content).strip()
 
     return {
         "messages":      [AIMessage(content=response_text)],

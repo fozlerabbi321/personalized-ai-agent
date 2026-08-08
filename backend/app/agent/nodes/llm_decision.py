@@ -5,6 +5,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.config import settings
 from app.agent.state import AgentState
+from app.core.utils import extract_text
 
 # Shared LLM instance — temperature=0 for deterministic routing
 _llm = ChatGoogleGenerativeAI(
@@ -33,14 +34,16 @@ async def llm_decision_node(state: AgentState) -> dict:
     This node's LLM tokens are intentionally NOT streamed to the client
     (filtered by langgraph_node metadata in the SSE endpoint).
     """
-    last_message = state["messages"][-1].content if state["messages"] else ""
+    last_msg = state["messages"][-1] if state.get("messages") else None
+    last_message = extract_text(last_msg.content) if last_msg else ""
 
     response = await _llm.ainvoke([
         SystemMessage(content=_ROUTER_SYSTEM),
         HumanMessage(content=f"User message: {last_message}"),
     ])
 
-    raw = response.content.strip().lower().strip('"').strip("'")
+    raw_text = extract_text(response.content)
+    raw = raw_text.strip().lower().strip('"').strip("'")
     intent = raw if raw in ("api_call", "summary", "general") else "general"
 
     return {

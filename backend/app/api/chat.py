@@ -9,6 +9,7 @@ from fastapi.responses import StreamingResponse
 from langchain_core.messages import HumanMessage
 
 from app.core.deps import get_agent_graph, get_current_user
+from app.core.utils import extract_text
 from app.database import get_db_connection
 from app.schemas.chat import ChatRequest
 
@@ -17,6 +18,17 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 # Nodes whose LLM tokens should be forwarded to the client as SSE "token" events.
 # The llm_decision node's internal routing tokens are intentionally suppressed.
 _STREAMING_NODES = {"api_call", "summary", "general"}
+
+
+def _normalize_uuid(val: str) -> str:
+    """
+    Ensure the string is a valid UUID format for PostgreSQL.
+    If a custom string is passed, converts it deterministically via UUID5.
+    """
+    try:
+        return str(uuid.UUID(val))
+    except ValueError:
+        return str(uuid.uuid5(uuid.NAMESPACE_DNS, val))
 
 
 # ── Database helpers ──────────────────────────────────────────────────────────
@@ -53,13 +65,16 @@ async def _save_turn(
     widget_json: dict | None,
 ) -> None:
     """Persist both the human message and the assistant response to the DB."""
+    safe_session_id = _normalize_uuid(session_id)
+    safe_user_id = _normalize_uuid(user_id)
+
     async with get_db_connection() as conn:
-        await _upsert_session(conn, session_id, user_id, human_text)
+        await _upsert_session(conn, safe_session_id, safe_user_id, human_text)
         await conn.executemany(
             "INSERT INTO chat_messages (id, session_id, role, content, widget_json) VALUES ($1, $2, $3, $4, $5)",
             [
-                (str(uuid.uuid4()), session_id, "human",     human_text,     None),
-                (str(uuid.uuid4()), session_id, "assistant", assistant_text,
+                (str(uuid.uuid4()), safe_session_id, "human",     human_text,     None),
+                (str(uuid.uuid4()), safe_session_id, "assistant", assistant_text,
                  json.dumps(widget_json) if widget_json else None),
             ],
         )
@@ -102,14 +117,16 @@ async def _stream_agent(
             if event_type == "on_chat_model_stream" and node_name in _STREAMING_NODES:
                 chunk = event["data"].get("chunk")
                 if chunk and getattr(chunk, "content", None):
-                    payload = json.dumps({"type": "token", "content": chunk.content})
-                    yield f"event: token\ndata: {payload}\n\n"
+                    text_content = extract_text(chunk.content)
+                    if text_content:
+                        payload = json.dumps({"type": "token", "content": text_content})
+                        yield f"event: token\ndata: {payload}\n\n"
 
         # ── Post-stream: read final state ─────────────────────────────────────
         final_state  = await graph.aget_state(config)
         values       = final_state.values if final_state else {}
         widget_json  = values.get("widget_json")
-        response_text = values.get("response_text", "")
+        response_text = extract_text(values.get("response_text", ""))
 
         # Emit widget event if the agent produced one
         if widget_json:

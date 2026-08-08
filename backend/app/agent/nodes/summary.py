@@ -5,6 +5,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.config import settings
 from app.agent.state import AgentState
+from app.core.utils import extract_text
 
 _llm = ChatGoogleGenerativeAI(
     model=settings.GEMINI_MODEL,
@@ -34,7 +35,8 @@ async def summary_node(state: AgentState) -> dict:
     conversation_parts: list[str] = []
     for msg in messages[:-1]:
         role = "Human" if isinstance(msg, HumanMessage) else "Assistant"
-        conversation_parts.append(f"{role}: {msg.content}")
+        part_text = extract_text(msg.content)
+        conversation_parts.append(f"{role}: {part_text}")
 
     if not conversation_parts:
         response_text = "There's no previous conversation to summarize yet. Start chatting and I'll keep track!"
@@ -44,7 +46,7 @@ async def summary_node(state: AgentState) -> dict:
             SystemMessage(content=_SUMMARY_SYSTEM),
             HumanMessage(content=f"Conversation to summarize:\n\n{conversation_text}"),
         ])
-        response_text = response.content.strip()
+        response_text = extract_text(response.content).strip()
 
     return {
         "messages":      [AIMessage(content=response_text)],
