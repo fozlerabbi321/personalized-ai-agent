@@ -7,7 +7,7 @@
 .env.local
 .env.*.local
 backend/.env
-web/.env.local
+frontend/.env.local
 
 # ── macOS ─────────────────────────────────────────────────────────────────────
 .DS_Store

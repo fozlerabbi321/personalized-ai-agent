@@ -161,7 +161,7 @@ LangGraph automatically persists conversation memory per `session_id` into Postg
 | `LANGCHAIN_API_KEY` | No | `""` | LangSmith API Key |
 | `LANGCHAIN_PROJECT` | No | `personalized-ai-agent` | LangSmith project name |
 
-### Frontend `.env.local` (`web/.env.local`)
+### Frontend `.env.local` (`frontend/.env.local`)
 
 | Variable | Required | Default | Description |
 |---|---|---|---|

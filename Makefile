@@ -12,7 +12,7 @@ help:
 	@echo "  make dev       Start ALL services (Docker + Next.js)"
 	@echo "  make backend   Start only backend (Docker: FastAPI + PostgreSQL)"
 	@echo "  make frontend  Start only Next.js dev server"
-	@echo "  make setup     Copy .env.example → .env for backend & web"
+	@echo "  make setup     Copy .env.example → .env for backend & frontend"
 	@echo "  make seed      Populate DB with dummy users, sessions & messages"
 	@echo "  make stop      Stop all Docker services"
 	@echo "  make logs      Tail all Docker service logs"
@@ -44,7 +44,7 @@ dev: setup
 	@echo "  🌐  Starting Frontend..."
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo ""
-	cd web && npm run dev
+	cd frontend && npm run dev
 
 # ──────────────────────────────────────────────────────────────────────────────
 # BACKEND ONLY
@@ -64,7 +64,7 @@ backend: setup
 # ──────────────────────────────────────────────────────────────────────────────
 frontend:
 	@echo "🌐  Starting Next.js dev server..."
-	cd web && npm run dev
+	cd frontend && npm run dev
 
 # ──────────────────────────────────────────────────────────────────────────────
 # SEED — populate DB with test data

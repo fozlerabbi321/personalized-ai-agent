@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ──────────────────────────────────────────────────────────────────────────────
-# setup.sh — Copy .env.example → .env for backend and web
+# setup.sh — Copy .env.example → .env for backend and frontend
 # Usage: bash setup.sh  (called automatically by `make dev` and `make setup`)
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
@@ -27,15 +27,15 @@ else
 fi
 
 # ── Frontend ─────────────────────────────────────────────────────────────────
-if [ ! -f web/.env.local ]; then
-    if [ -f web/.env.example ]; then
-        cp web/.env.example web/.env.local
-        echo -e "${GREEN}✅  Created web/.env.local from .env.example${RESET}"
+if [ ! -f frontend/.env.local ]; then
+    if [ -f frontend/.env.example ]; then
+        cp frontend/.env.example frontend/.env.local
+        echo -e "${GREEN}✅  Created frontend/.env.local from .env.example${RESET}"
     else
-        echo -e "${YELLOW}ℹ️   web/.env.example not found (available after Phase 3 setup)${RESET}"
+        echo -e "${YELLOW}ℹ️   frontend/.env.example not found${RESET}"
     fi
 else
-    echo -e "${YELLOW}ℹ️   web/.env.local already exists — skipping${RESET}"
+    echo -e "${YELLOW}ℹ️   frontend/.env.local already exists — skipping${RESET}"
 fi
 
 echo "────────────────────────────────────────────────"

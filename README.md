@@ -109,7 +109,7 @@ Run the interactive environment setup command:
 ```bash
 make setup
 ```
-This automatically copies `.env.example` templates to `backend/.env` and `web/.env.local`.
+This automatically copies `.env.example` templates to `backend/.env` and `frontend/.env.local`.
 
 Edit `backend/.env` and insert your **Google Gemini API Key**:
 ```env
@@ -211,7 +211,7 @@ personalized-ai-agent/
 │       ├── core/                   # JWT Auth & utility functions
 │       └── schemas/                # Pydantic Request/Response models
 │
-└── web/                            # Next.js 14 Frontend
+└── frontend/                       # Next.js 14 Frontend
     ├── package.json
     ├── next.config.ts
     └── src/
@@ -234,6 +234,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 <div align="center">
 
-**Developed with ❤️ by [Fozle Rabbi](https://github.com/fozlerabbi321)**
+**Developed with ❤️ by [Fozle Rabbi](https://fozlerabbi321.github.io)**
 
 </div>

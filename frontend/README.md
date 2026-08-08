@@ -1,4 +1,4 @@
-# personalized_ai_agent — Web Client (Next.js)
+# personalized_ai_agent — Frontend Client (Next.js)
 
 > Next.js App Router · TypeScript · Tailwind CSS · Feature-First Architecture · Server-Driven UI (SDUI)
 
@@ -33,7 +33,7 @@ The web application will be available at: **`http://localhost:3000`**
 ## 🏗️ Feature-First Folder Architecture
 
 ```
-web/src/
+frontend/src/
 ├── app/                           # Next.js App Router Pages
 │   ├── layout.tsx                # Root layout with AuthProvider & Theme
 │   ├── page.tsx                  # Home page (login or chat)
