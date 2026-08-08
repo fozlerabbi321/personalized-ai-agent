@@ -1,6 +1,6 @@
 # 🤖 Personalized AI Agent (Athena AI)
 
-> **A Production-Ready, Full-Stack AI System powered by FastAPI, LangGraph, Google Gemini, PostgreSQL, and Next.js 14 with Server-Driven UI (SDUI) Streaming.**
+> **A Full-Stack AI System powered by FastAPI, LangGraph, Google Gemini (can use ANY LLM), PostgreSQL, and Next.js 14 with Server-Driven UI (SDUI) Streaming.**
 
 ---
 
