@@ -62,13 +62,13 @@ LangSmith provides full tracing and telemetry for your LangGraph nodes and Gemin
    - Navigate to **Settings** → **API Keys**.
    - Click **"Create API Key"** and copy the value.
 4. **Configure in `backend/.env`**:
-   ```env
-   LANGCHAIN_TRACING_V2=true
-   LANGCHAIN_API_KEY=lsv2_pt_your_langsmith_key_here
-   LANGCHAIN_PROJECT=personalized-ai-agent
-   ```
+### C. Do I Need a LangGraph API Key? (Important Clarification)
+**NO, a LangGraph API key is NOT required.**
 
----
+- **LangGraph Python Library (`langgraph`)**: It is a 100% free, open-source Python framework that runs directly inside your FastAPI Docker container.
+- **Self-Hosted Persistence**: Our PostgreSQL database (`PostgresSaver`) handles memory and thread checkpoints locally.
+- **Which key is actually required?**: You only need the **Google Gemini API Key (`GOOGLE_API_KEY`)** because LangGraph delegates intelligent reasoning and text generation to Gemini.
+- **Optional Observability Key**: If you want visual execution traces on web dashboards, you can optionally provide a **LangSmith Key (`LANGCHAIN_API_KEY`)**.
 
 ## 2. LLM & LangGraph Architecture
 
