@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Athena AI | Personalized AI Agent",
-  description: "Athena AI is a personalized AI assistant that learns from your behavior and preferences. Powered by LangGraph and Server-Driven UI.",
+  title: "Athena | Personalized AI Assistant",
+  description: "Athena is a personalized AI assistant that learns from your behavior and preferences.",
 };
 
 export default function RootLayout({
