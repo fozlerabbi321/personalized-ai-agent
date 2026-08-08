@@ -23,14 +23,13 @@ import uuid
 from datetime import datetime, timedelta, timezone
 
 import asyncpg
-from passlib.context import CryptContext
+import bcrypt
 
 DATABASE_URL: str = os.getenv(
     "DATABASE_URL",
     "postgresql://ai_agent_user:ai_agent_pass@localhost:5432/ai_agent_db",
 )
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # ─── Seed fixtures ─────────────────────────────────────────────────────────────
 
@@ -211,9 +210,11 @@ async def _seed_user(conn: asyncpg.Connection, email: str, password: str) -> str
         return str(existing["id"])
 
     user_id = str(uuid.uuid4())
+    salt = bcrypt.gensalt(rounds=12)
+    hashed = bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
     await conn.execute(
         "INSERT INTO users (id, email, hashed_password) VALUES ($1, $2, $3)",
-        user_id, email, pwd_context.hash(password),
+        user_id, email, hashed,
     )
     print(f"  ✅ Created user: {email}")
     return user_id

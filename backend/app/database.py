@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 import asyncpg
+from psycopg.rows import dict_row
 from psycopg_pool import AsyncConnectionPool
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
@@ -49,16 +50,18 @@ async def init_db() -> AsyncPostgresSaver:
         await _create_app_tables(conn)
 
     # 3. psycopg async pool for LangGraph ─────────────────────────────────────
+    # autocommit=True is required because LangGraph's setup() runs
+    # CREATE INDEX CONCURRENTLY which cannot run inside a transaction block.
     _psycopg_pool = AsyncConnectionPool(
         conninfo=settings.DATABASE_URL,
         max_size=10,
         open=False,
+        kwargs={"autocommit": True, "row_factory": dict_row},
     )
     await _psycopg_pool.open()
 
     # 4. LangGraph PostgresSaver checkpointer ─────────────────────────────────
     _checkpointer = AsyncPostgresSaver(_psycopg_pool)
-    # Creates checkpoints / writes / blobs tables if they don't exist
     await _checkpointer.setup()
 
     return _checkpointer

@@ -1,0 +1,45 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# personalized-ai-agent — Root .gitignore
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── Environment files (NEVER commit secrets) ──────────────────────────────────
+.env
+.env.local
+.env.*.local
+backend/.env
+web/.env.local
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+
+# ── IDE / Editor ──────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*.iml
+*.suo
+*.user
+.project
+.settings/
+
+# ── Docker volumes / build artifacts ──────────────────────────────────────────
+postgres_data/
+docker-volumes/
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+Thumbs.db
+Desktop.ini
