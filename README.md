@@ -1,6 +1,6 @@
 # 🤖 Personalized AI Agent (Athena AI)
 
-> **A Full-Stack AI System powered by FastAPI, LangGraph, Google Gemini (can use ANY LLM), PostgreSQL, and Next.js 14 with Server-Driven UI (SDUI) Streaming.**
+> **A Full-Stack AI System powered by FastAPI, LangGraph, LangSmith, Google Gemini (can use ANY LLM), PostgreSQL, and Next.js 14 with Server-Driven UI (SDUI) Streaming.**
 
 ---
 
@@ -39,6 +39,7 @@ The system pioneers a **Server-Driven UI (SDUI)** approach: the AI backend deter
 ## 🔥 Key Technical Highlights
 
 - 🧠 **LangGraph Stateful Agent Architecture**: Uses a multi-node Directed Acyclic Graph (DAG) with an **LLM Decision Router**, **API Action Nodes**, **Summarization Nodes**, and **General Response Nodes**.
+- 🧪 **Observability**: Built-in support for [**LangSmith**](https://smith.langchain.com) tracing and debugging. Monitor agent runs, LLM calls, and graph state transitions in real-time.
 - 🎨 **Server-Driven UI (SDUI)**: Backend streams structured `widget_json` payloads via SSE events (`token`, `widget`, `done`, `error`). The Next.js client renders dynamic React widgets (`CandlestickChart`, `MetricCard`, `DataTable`) based on backend intent.
 - 💾 **Stateful Memory Persistence**: Uses LangGraph's `PostgresSaver` checkpointer to preserve conversation state across server restarts using thread IDs.
 - ⚡ **Real-Time SSE Streaming**: Async token streaming powered by FastAPI `StreamingResponse` and custom SSE line-by-line `TextDecoder` readers on the frontend.
