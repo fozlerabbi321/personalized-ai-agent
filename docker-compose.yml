@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  # ────────────────────────────────────────────────────────────────────────────
+  # PostgreSQL 16
+  # ────────────────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: ai_agent_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ai_agent_db}
+      POSTGRES_USER: ${POSTGRES_USER:-ai_agent_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ai_agent_pass}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-ai_agent_user} -d ${POSTGRES_DB:-ai_agent_db}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # FastAPI Backend
+  # ────────────────────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai_agent_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      # Override DATABASE_URL to use 'postgres' Docker service name as host
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-ai_agent_user}:${POSTGRES_PASSWORD:-ai_agent_pass}@postgres:5432/${POSTGRES_DB:-ai_agent_db}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
+    driver: local
