@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.deps import get_current_user
@@ -83,16 +85,24 @@ async def get_session_messages(
             session_id,
         )
 
-    messages = [
-        MessageResponse(
-            message_id=str(r["id"]),
-            role=r["role"],
-            content=r["content"],
-            widget_json=r["widget_json"],
-            created_at=r["created_at"],
+    messages = []
+    for r in rows:
+        wj = r["widget_json"]
+        if wj and isinstance(wj, str):
+            try:
+                wj = json.loads(wj)
+            except (json.JSONDecodeError, TypeError):
+                wj = None
+
+        messages.append(
+            MessageResponse(
+                message_id=str(r["id"]),
+                role=r["role"],
+                content=r["content"],
+                widget_json=wj,
+                created_at=r["created_at"],
+            )
         )
-        for r in rows
-    ]
     return SessionMessagesResponse(session_id=session_id, messages=messages)
 
 

@@ -22,13 +22,23 @@ export function useChat(initialSessionId?: string) {
       setError(null);
       try {
         const data = await sessionService.getSessionMessages(targetSessionId, token);
-        const mapped: Message[] = data.messages.map((m) => ({
-          id: m.message_id,
-          role: m.role,
-          content: m.content,
-          widget_json: m.widget_json,
-          timestamp: m.created_at,
-        }));
+        const mapped: Message[] = data.messages.map((m) => {
+          let parsedWidget = m.widget_json;
+          if (typeof parsedWidget === "string") {
+            try {
+              parsedWidget = JSON.parse(parsedWidget);
+            } catch {
+              parsedWidget = null;
+            }
+          }
+          return {
+            id: m.message_id,
+            role: m.role,
+            content: m.content,
+            widget_json: parsedWidget,
+            timestamp: m.created_at,
+          };
+        });
         setMessages(mapped);
         setSessionId(targetSessionId);
       } catch (err: any) {

@@ -10,9 +10,18 @@ interface WidgetRendererProps {
 }
 
 export function WidgetRenderer({ widget }: WidgetRendererProps) {
-  if (!widget || typeof widget !== "object") return null;
+  let targetWidget = widget;
+  if (typeof targetWidget === "string") {
+    try {
+      targetWidget = JSON.parse(targetWidget);
+    } catch {
+      return null;
+    }
+  }
 
-  const type = widget.widget_type;
+  if (!targetWidget || typeof targetWidget !== "object") return null;
+
+  const type = targetWidget.widget_type;
   const Component = widgetRegistry[type];
 
   if (!Component) {
