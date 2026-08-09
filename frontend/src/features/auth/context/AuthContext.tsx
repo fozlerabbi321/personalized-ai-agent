@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { authService } from "../services/authService";
 import { User } from "../types";
+import { apiClient } from "@/shared/lib/apiClient";
 
 interface AuthContextType {
   user: User | null;
@@ -19,6 +20,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Register token getter with apiClient so all HTTP calls inherit Authorization header
+  useEffect(() => {
+    apiClient.setTokenGetter(() => localStorage.getItem("access_token"));
+  }, []);
 
   useEffect(() => {
     const savedToken = localStorage.getItem("access_token");

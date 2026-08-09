@@ -1,8 +1,8 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { apiClient } from "@/shared/lib/apiClient";
 
 export interface StreamCallbacks {
   onToken: (token: string) => void;
-  onWidget: (widgetJson: any) => void;
+  onWidget: (widgetJson: Record<string, unknown>) => void;
   onDone: (sessionId: string) => void;
   onError: (error: string) => void;
 }
@@ -14,7 +14,8 @@ export const chatService = {
     token: string,
     callbacks: StreamCallbacks
   ): Promise<void> {
-    const res = await fetch(`${API_URL}/api/chat/stream`, {
+    const baseUrl = apiClient.getBaseUrl();
+    const res = await fetch(`${baseUrl}/api/chat/stream`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,8 +87,9 @@ export const chatService = {
           }
         }
       }
-    } catch (err: any) {
-      callbacks.onError(err.message || "Stream interrupted");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Stream interrupted";
+      callbacks.onError(msg);
     } finally {
       reader.releaseLock();
     }
