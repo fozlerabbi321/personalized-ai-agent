@@ -1,7 +1,11 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/features/auth/context/AuthContext";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/shared/lib/queryClient";
+import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,11 +17,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Athena | Personalized AI Assistant",
-  description: "Athena is a personalized AI assistant that learns from your behavior and preferences.",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,7 +27,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#090d16] text-gray-100 min-h-screen`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <ErrorBoundary>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>{children}</AuthProvider>
+          </QueryClientProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
