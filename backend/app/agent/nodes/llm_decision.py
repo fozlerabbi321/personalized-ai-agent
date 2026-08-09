@@ -1,19 +1,12 @@
 from __future__ import annotations
 
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
 
-from app.config import settings
-from app.agent.state import AgentState
+from app.agent.constants import Intent
 from app.agent.prompts import build_athena_router_prompt
+from app.agent.state import AgentState
 from app.core.utils import extract_text
-
-# Shared LLM instance — temperature=0 for deterministic routing
-_llm = ChatGoogleGenerativeAI(
-    model=settings.GEMINI_MODEL,
-    google_api_key=settings.GOOGLE_API_KEY,
-    temperature=0,
-)
+from app.infrastructure.ai.llm_provider import TEMPERATURE_DETERMINISTIC, get_llm
 
 
 async def llm_decision_node(state: AgentState) -> dict:
@@ -28,14 +21,15 @@ async def llm_decision_node(state: AgentState) -> dict:
 
     router_prompt = build_athena_router_prompt(messages)
 
-    response = await _llm.ainvoke([
+    llm = get_llm(TEMPERATURE_DETERMINISTIC)
+    response = await llm.ainvoke([
         SystemMessage(content=router_prompt),
         HumanMessage(content=f"User message: {last_message}"),
     ])
 
     raw_text = extract_text(response.content)
     raw = raw_text.strip().lower().strip('"').strip("'")
-    intent = raw if raw in ("api_call", "summary", "general") else "general"
+    intent = raw if raw in Intent.ALL else Intent.GENERAL
 
     return {
         "intent": intent,

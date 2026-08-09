@@ -3,7 +3,7 @@
 personalized_ai_agent — Database Seeder
 ========================================
 Populates PostgreSQL with dummy users, sessions, and messages
-so you can test the full system immediately after `make dev`.
+so you can test the full system immediately after ``make dev``.
 
 Usage:
     make seed                                   ← (recommended, runs inside Docker)
@@ -174,7 +174,12 @@ SESSIONS_TEMPLATE = [
 
 # ─── Helpers ───────────────────────────────────────────────────────────────────
 
+
 async def _ensure_tables(conn: asyncpg.Connection) -> None:
+    """
+    Create application tables if they don't exist.
+    Schema definition mirrors app/infrastructure/database/connection.py (single source).
+    """
     await conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -201,6 +206,7 @@ async def _ensure_tables(conn: asyncpg.Connection) -> None:
         CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id ON chat_messages(session_id);
     """)
     print("  ✅ Tables verified")
+
 
 
 async def _seed_user(conn: asyncpg.Connection, email: str, password: str) -> str:

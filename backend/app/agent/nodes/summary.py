@@ -1,18 +1,11 @@
 from __future__ import annotations
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
 
-from app.config import settings
-from app.agent.state import AgentState
 from app.agent.prompts import build_athena_summary_prompt
+from app.agent.state import AgentState
 from app.core.utils import extract_text
-
-_llm = ChatGoogleGenerativeAI(
-    model=settings.GEMINI_MODEL,
-    google_api_key=settings.GOOGLE_API_KEY,
-    temperature=0.2,
-)
+from app.infrastructure.ai.llm_provider import TEMPERATURE_FOCUSED, get_llm
 
 
 async def summary_node(state: AgentState) -> dict:
@@ -34,7 +27,8 @@ async def summary_node(state: AgentState) -> dict:
     else:
         conversation_text = "\n\n".join(conversation_parts)
         summary_prompt = build_athena_summary_prompt(messages)
-        response = await _llm.ainvoke([
+        llm = get_llm(TEMPERATURE_FOCUSED)
+        response = await llm.ainvoke([
             SystemMessage(content=summary_prompt),
             HumanMessage(content=f"Conversation to summarize:\n\n{conversation_text}"),
         ])
