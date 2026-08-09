@@ -56,10 +56,14 @@ export function useChat(initialSessionId?: string) {
 
   useEffect(() => {
     if (initialSessionId) {
-      loadMessages(initialSessionId);
+      queueMicrotask(() => {
+        loadMessages(initialSessionId);
+      });
     } else {
-      setMessages([]);
-      setSessionId(null);
+      queueMicrotask(() => {
+        setMessages([]);
+        setSessionId(null);
+      });
     }
   }, [initialSessionId, loadMessages]);
 

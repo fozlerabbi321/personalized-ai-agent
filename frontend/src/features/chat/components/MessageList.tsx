@@ -62,7 +62,7 @@ export function MessageList({
                   {item.title}
                 </span>
                 <span className="text-[11px] text-gray-400 line-clamp-2">
-                  "{item.prompt}"
+                  &ldquo;{item.prompt}&rdquo;
                 </span>
               </button>
             );

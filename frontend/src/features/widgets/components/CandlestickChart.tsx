@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { CandlestickWidgetPayload, OHLCItem } from "../types";
-import { TrendingUp, TrendingDown, Activity, DollarSign, Calendar } from "lucide-react";
+import { TrendingUp, TrendingDown, Activity } from "lucide-react";
 
 export function CandlestickChart(props: CandlestickWidgetPayload) {
   const { ticker, title, current_price, change, change_pct, data = [], seven_day_high, seven_day_low } = props;

@@ -9,8 +9,8 @@ import { Sparkles, Lock, Mail } from "lucide-react";
 export function LoginForm() {
   const { login, register } = useAuth();
   const [isRegistering, setIsRegistering] = useState(false);
-  const [email, setEmail] = useState("alice@example.com");
-  const [password, setPassword] = useState("Password123!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -25,8 +25,9 @@ export function LoginForm() {
       } else {
         await login(email, password);
       }
-    } catch (err: any) {
-      setError(err.message || "Authentication failed");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Authentication failed";
+      setError(msg);
     } finally {
       setIsLoading(false);
     }

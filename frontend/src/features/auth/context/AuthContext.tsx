@@ -29,17 +29,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const savedToken = localStorage.getItem("access_token");
     if (savedToken) {
-      setToken(savedToken);
       authService
         .getMe(savedToken)
-        .then(setUser)
+        .then((userData) => {
+          setToken(savedToken);
+          setUser(userData);
+        })
         .catch(() => {
           localStorage.removeItem("access_token");
           setToken(null);
         })
-        .finally(() => setIsLoading(false));
+        .finally(() => {
+          queueMicrotask(() => setIsLoading(false));
+        });
     } else {
-      setIsLoading(false);
+      queueMicrotask(() => setIsLoading(false));
     }
   }, []);
 
