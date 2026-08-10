@@ -1,18 +1,11 @@
 from __future__ import annotations
 
 from langchain_core.messages import AIMessage, SystemMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
 
-from app.config import settings
-from app.agent.state import AgentState
 from app.agent.prompts import build_athena_system_prompt
+from app.agent.state import AgentState
 from app.core.utils import extract_text
-
-_llm = ChatGoogleGenerativeAI(
-    model=settings.GEMINI_MODEL,
-    google_api_key=settings.GOOGLE_API_KEY,
-    temperature=0.7,
-)
+from app.infrastructure.ai.llm_provider import TEMPERATURE_BALANCED, get_llm
 
 
 async def general_response_node(state: AgentState) -> dict:
@@ -26,7 +19,8 @@ async def general_response_node(state: AgentState) -> dict:
 
     messages = [SystemMessage(content=system_prompt)] + raw_messages
 
-    response = await _llm.ainvoke(messages)
+    llm = get_llm(TEMPERATURE_BALANCED)
+    response = await llm.ainvoke(messages)
     response_text = extract_text(response.content).strip()
 
     return {

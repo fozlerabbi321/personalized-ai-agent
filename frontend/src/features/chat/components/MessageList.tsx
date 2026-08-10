@@ -3,32 +3,15 @@
 import React, { useEffect, useRef } from "react";
 import { Message } from "../types";
 import { MessageBubble } from "./MessageBubble";
-import { Sparkles, TrendingUp, Code2, Layers } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { Spinner } from "@/shared/components/ui/Spinner";
+import { SUGGESTED_PROMPTS } from "../constants";
 
 interface MessageListProps {
   messages: Message[];
   isLoadingMessages: boolean;
   onSuggestedPrompt?: (text: string) => void;
 }
-
-const SUGGESTED_PROMPTS = [
-  {
-    title: "Bitcoin Market & OHLC Chart",
-    prompt: "Show me BTC price and market analysis",
-    icon: TrendingUp,
-  },
-  {
-    title: "Python Async/Await",
-    prompt: "Explain Python async/await concurrency with an example.",
-    icon: Code2,
-  },
-  {
-    title: "Summarize History",
-    prompt: "Summarize our conversation so far.",
-    icon: Layers,
-  },
-];
 
 export function MessageList({
   messages,
@@ -79,7 +62,7 @@ export function MessageList({
                   {item.title}
                 </span>
                 <span className="text-[11px] text-gray-400 line-clamp-2">
-                  "{item.prompt}"
+                  &ldquo;{item.prompt}&rdquo;
                 </span>
               </button>
             );

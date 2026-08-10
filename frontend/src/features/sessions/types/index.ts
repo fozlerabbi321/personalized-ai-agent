@@ -1,3 +1,5 @@
+import { WidgetPayload } from "@/features/widgets/types";
+
 export interface Session {
   session_id: string;
   title: string;
@@ -15,7 +17,7 @@ export interface SavedMessage {
   message_id: string;
   role: "human" | "assistant";
   content: string;
-  widget_json: any | null;
+  widget_json: WidgetPayload | Record<string, unknown> | string | null;
   created_at: string;
 }
 

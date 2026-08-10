@@ -1,51 +1,56 @@
 from __future__ import annotations
 
-import json
+"""
+api_call_node — Fetch mock financial data and generate Athena's market analysis.
+
+Key improvements over the original:
+  - Module-level ``_llm`` removed → uses ``LLMProvider`` singleton
+  - ``_detect_ticker`` uses regex word-boundary matching to prevent false positives
+    (e.g., "INTC" no longer matches "DISTINCT")
+  - ``_KNOWN_TICKERS`` and ``_BASE_PRICES`` moved to ``agent/constants.py``
+"""
+
 import random
+import re
 from datetime import datetime, timedelta
 
 from langchain_core.messages import AIMessage, HumanMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
 
-from app.config import settings
-from app.agent.state import AgentState
+from app.agent.constants import BASE_PRICES, DEFAULT_BASE_PRICE, DEFAULT_TICKER, KNOWN_TICKERS
 from app.agent.prompts import build_athena_chart_analysis_prompt
+from app.agent.state import AgentState
 from app.core.utils import extract_text
+from app.infrastructure.ai.llm_provider import TEMPERATURE_ANALYTICAL, get_llm
 
-_llm = ChatGoogleGenerativeAI(
-    model=settings.GEMINI_MODEL,
-    google_api_key=settings.GOOGLE_API_KEY,
-    temperature=0.4,
-)
-
-# Common tickers to detect from the user message
-_KNOWN_TICKERS = [
-    "AAPL", "GOOGL", "GOOG", "MSFT", "TSLA", "AMZN", "META",
-    "NVDA", "NFLX", "AMD", "INTC", "BTC", "ETH", "SPY", "QQQ",
+# Pre-compiled regex patterns for ticker detection (word-boundary safe)
+# Sorted longest first to avoid partial matches (GOOGL before GOOG)
+_TICKER_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
+    (ticker, re.compile(rf"\b{re.escape(ticker)}\b", re.IGNORECASE))
+    for ticker in KNOWN_TICKERS
 ]
 
 
 def _detect_ticker(message: str) -> str:
-    """Extract a ticker symbol from the user's message (case-insensitive)."""
-    upper_msg = message.upper()
-    for ticker in _KNOWN_TICKERS:
-        if ticker in upper_msg:
+    """
+    Extract the first recognized ticker symbol from the user's message.
+
+    Uses word-boundary regex (``\\b``) to prevent false positives.
+    Example: "INTC" will NOT match "DISTINCT".
+    Falls back to DEFAULT_TICKER if no known ticker is found.
+    """
+    for ticker, pattern in _TICKER_PATTERNS:
+        if pattern.search(message):
             return ticker
-    return "AAPL"  # default fallback
+    return DEFAULT_TICKER
 
 
 def _generate_mock_ohlc(ticker: str, days: int = 7) -> dict:
     """
-    Generate realistic-looking mock OHLC + volume stock data.
-    Uses a random walk anchored around a plausible base price.
+    Generate realistic-looking mock OHLC + volume data using a random walk.
+
+    Base prices are sourced from ``agent/constants.py`` (single source of truth).
     """
-    base_prices = {
-        "AAPL": 187.0, "GOOGL": 175.0, "GOOG": 175.0, "MSFT": 420.0,
-        "TSLA": 245.0, "AMZN": 195.0, "META": 535.0, "NVDA": 880.0,
-        "NFLX": 640.0, "AMD": 165.0, "INTC": 35.0,
-        "BTC": 67000.0, "ETH": 3500.0, "SPY": 540.0, "QQQ": 470.0,
-    }
-    base = base_prices.get(ticker, 100.0)
+    base = BASE_PRICES.get(ticker, DEFAULT_BASE_PRICE)
     data = []
 
     for i in range(days):
@@ -65,7 +70,7 @@ def _generate_mock_ohlc(ticker: str, days: int = 7) -> dict:
             "close":  round(close_p, 2),
             "volume": volume,
         })
-        base = close_p  # random walk
+        base = close_p  # random walk — next candle starts from previous close
 
     current_price = data[-1]["close"]
     start_price   = data[0]["open"]
@@ -96,8 +101,8 @@ async def api_call_node(state: AgentState) -> dict:
     Fetch mock financial data and use Gemini to generate a natural analysis.
 
     Tokens from this node ARE streamed to the client
-    (langgraph_node == 'api_call' passes the SSE filter).
-    The `widget_json` is captured from the final graph state after streaming.
+    (``langgraph_node == 'api_call'`` passes the SSE filter in STREAMING_NODES).
+    The ``widget_json`` is captured from the final graph state after streaming completes.
     """
     last_msg = state["messages"][-1] if state.get("messages") else None
     last_message = extract_text(last_msg.content) if last_msg else ""
@@ -105,17 +110,18 @@ async def api_call_node(state: AgentState) -> dict:
     widget_data = _generate_mock_ohlc(ticker)
 
     data_summary = {
-        "ticker":         widget_data["ticker"],
-        "current_price":  widget_data["current_price"],
-        "7_day_change":   f"{'+' if widget_data['change'] >= 0 else ''}{widget_data['change']} ({'+' if widget_data['change_pct'] >= 0 else ''}{widget_data['change_pct']}%)",
-        "7_day_high":     widget_data["seven_day_high"],
-        "7_day_low":      widget_data["seven_day_low"],
+        "ticker":        widget_data["ticker"],
+        "current_price": widget_data["current_price"],
+        "7_day_change":  f"{'+' if widget_data['change'] >= 0 else ''}{widget_data['change']} ({'+' if widget_data['change_pct'] >= 0 else ''}{widget_data['change_pct']}%)",
+        "7_day_high":    widget_data["seven_day_high"],
+        "7_day_low":     widget_data["seven_day_low"],
     }
 
     all_messages = state.get("messages", [])
     analysis_prompt = build_athena_chart_analysis_prompt(ticker, data_summary, all_messages)
 
-    response = await _llm.ainvoke([HumanMessage(content=analysis_prompt)])
+    llm = get_llm(TEMPERATURE_ANALYTICAL)
+    response = await llm.ainvoke([HumanMessage(content=analysis_prompt)])
     response_text = extract_text(response.content).strip()
 
     return {

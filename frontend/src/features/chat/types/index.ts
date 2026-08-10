@@ -1,8 +1,10 @@
+import { WidgetPayload } from "@/features/widgets/types";
+
 export interface Message {
   id: string;
   role: "human" | "assistant";
   content: string;
-  widget_json?: any;
+  widget_json?: WidgetPayload | Record<string, unknown>;
   isStreaming?: boolean;
   timestamp?: string;
 }
@@ -16,7 +18,7 @@ export interface SSETokenPayload {
 
 export interface SSEWidgetPayload {
   type: "widget";
-  widget_json: any;
+  widget_json: WidgetPayload | Record<string, unknown>;
 }
 
 export interface SSEDonePayload {

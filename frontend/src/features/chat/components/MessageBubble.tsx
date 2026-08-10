@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Message } from "../types";
 import { Avatar } from "@/shared/components/ui/Avatar";
 import { WidgetRenderer } from "@/features/widgets/WidgetRenderer";
@@ -30,14 +32,22 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       >
         <div
           className={cn(
-            "px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words shadow-sm",
+            "px-4 py-3 rounded-2xl text-sm leading-relaxed break-words shadow-sm",
             isHuman
-              ? "bg-indigo-600 text-white rounded-tr-none shadow-indigo-600/20"
+              ? "bg-indigo-600 text-white rounded-tr-none shadow-indigo-600/20 whitespace-pre-wrap"
               : "glass-card text-gray-100 rounded-tl-none border border-gray-800"
           )}
         >
           {message.content ? (
-            <span>{message.content}</span>
+            isHuman ? (
+              <span>{message.content}</span>
+            ) : (
+              <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-800 prose-pre:rounded-xl">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {message.content}
+                </ReactMarkdown>
+              </div>
+            )
           ) : message.isStreaming ? (
             <span className="inline-flex items-center gap-1.5 text-gray-400 font-medium text-xs">
               <span className="h-2 w-2 rounded-full bg-indigo-500 animate-ping" />
