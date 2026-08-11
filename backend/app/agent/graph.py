@@ -18,17 +18,17 @@ def _route_intent(state: AgentState) -> str:
     Conditional edge: map `state.intent` → node name.
     Falls back to 'general' for any unrecognised intent value.
     """
-    match state.get("intent", Intent.GENERAL):
-        case Intent.WORKOUT:
-            return "workout"
-        case Intent.NUTRITION:
-            return "nutrition"
-        case Intent.PROGRESS:
-            return "progress"
-        case Intent.SUMMARY:
-            return "summary"
-        case _:
-            return "general"
+    intent = state.get("intent", Intent.GENERAL)
+    if intent == Intent.WORKOUT:
+        return "workout"
+    elif intent == Intent.NUTRITION:
+        return "nutrition"
+    elif intent == Intent.PROGRESS:
+        return "progress"
+    elif intent == Intent.SUMMARY:
+        return "summary"
+    else:
+        return "general"
 
 
 def build_graph(checkpointer: BaseCheckpointSaver):
