@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-personalized_ai_agent — Database Seeder
-========================================
-Populates PostgreSQL with dummy users, sessions, and messages
-so you can test the full system immediately after ``make dev``.
+Atlas AI — Database Seeder
+===========================
+Populates PostgreSQL with dummy users, fitness profiles, workout sessions,
+and SDUI widget messages so you can test the full system immediately after ``make dev``.
 
 Usage:
     make seed                                   ← (recommended, runs inside Docker)
@@ -11,8 +11,8 @@ Usage:
     python seeder.py                            ← (local, ensure DATABASE_URL is set)
 
 Test credentials created:
-    alice@example.com / Password123!
-    bob@example.com   / Password123!
+    alice@example.com / Password123!   (intermediate, muscle gain)
+    bob@example.com   / Password123!   (beginner, weight loss)
 """
 from __future__ import annotations
 
@@ -34,152 +34,216 @@ DATABASE_URL: str = os.getenv(
 # ─── Seed fixtures ─────────────────────────────────────────────────────────────
 
 USERS = [
-    {"email": "alice@example.com", "password": "Password123!"},
-    {"email": "bob@example.com",   "password": "Password123!"},
+    {"email": "alice@example.com", "password": "Password123!", "profile": {
+        "fitness_level": "intermediate",
+        "goal":          "muscle_gain",
+        "weight_kg":     65.0,
+        "height_cm":     168.0,
+        "age":           26,
+        "activity_level":"moderately_active",
+        "available_equip":["barbell", "dumbbells", "cable_machine", "pull_up_bar", "bench"],
+        "workout_days_pw": 4,
+        "dietary_pref":  "none",
+    }},
+    {"email": "bob@example.com", "password": "Password123!", "profile": {
+        "fitness_level": "beginner",
+        "goal":          "weight_loss",
+        "weight_kg":     90.0,
+        "height_cm":     180.0,
+        "age":           30,
+        "activity_level":"lightly_active",
+        "available_equip":["dumbbells", "resistance_bands", "bodyweight"],
+        "workout_days_pw": 3,
+        "dietary_pref":  "none",
+    }},
 ]
 
-MOCK_WIDGET = {
-    "widget_type":    "candlestick_chart",
-    "ticker":         "AAPL",
-    "title":          "AAPL — 7-Day Price Chart",
-    "current_price":  187.42,
-    "change":          4.32,
-    "change_pct":      2.36,
-    "seven_day_high": 189.10,
-    "seven_day_low":  182.50,
-    "data": [
-        {"date": "2025-07-28", "open": 183.10, "high": 184.50, "low": 182.00, "close": 183.80, "volume": 45_000_000},
-        {"date": "2025-07-29", "open": 183.80, "high": 186.00, "low": 183.20, "close": 185.50, "volume": 52_000_000},
-        {"date": "2025-07-30", "open": 185.50, "high": 187.00, "low": 184.80, "close": 186.20, "volume": 48_000_000},
-        {"date": "2025-07-31", "open": 186.20, "high": 188.00, "low": 185.50, "close": 187.00, "volume": 61_000_000},
-        {"date": "2025-08-01", "open": 187.00, "high": 189.10, "low": 186.00, "close": 188.30, "volume": 55_000_000},
-        {"date": "2025-08-04", "open": 188.30, "high": 189.00, "low": 186.90, "close": 187.80, "volume": 42_000_000},
-        {"date": "2025-08-05", "open": 187.80, "high": 188.50, "low": 186.50, "close": 187.42, "volume": 38_000_000},
+MOCK_WORKOUT_WIDGET = {
+    "widget_type":            "workout_plan",
+    "title":                  "Back Day — Muscle Gain Focus",
+    "goal":                   "muscle_gain",
+    "fitness_level":          "intermediate",
+    "muscle_group":           "back",
+    "exercises": [
+        {"name": "Pull-Up",          "equipment": "pull_up_bar",   "type": "compound",  "sets": 4, "reps": "8-12", "rest_seconds": 120, "muscle_group": "back"},
+        {"name": "Barbell Row",      "equipment": "barbell",       "type": "compound",  "sets": 4, "reps": "8-12", "rest_seconds": 120, "muscle_group": "back"},
+        {"name": "Lat Pulldown",     "equipment": "cable_machine", "type": "compound",  "sets": 4, "reps": "8-12", "rest_seconds": 90,  "muscle_group": "back"},
+        {"name": "Cable Row",        "equipment": "cable_machine", "type": "compound",  "sets": 4, "reps": "8-12", "rest_seconds": 90,  "muscle_group": "back"},
+        {"name": "Dumbbell Row",     "equipment": "dumbbells",     "type": "compound",  "sets": 4, "reps": "8-12", "rest_seconds": 90,  "muscle_group": "back"},
     ],
-    "metric": {
-        "label":     "Current Price",
-        "value":     "$187.42",
-        "delta":     "+2.36%",
-        "sentiment": "positive",
+    "total_exercises":        5,
+    "estimated_duration_min": 60,
+    "rep_scheme_note":        "4 sets × 8-12 reps | 90-120s rest",
+    "generated_at":           "2026-08-11",
+}
+
+MOCK_MACRO_WIDGET = {
+    "widget_type":      "macro_donut_chart",
+    "goal":             "muscle_gain",
+    "gender":           "female",
+    "weight_kg":        65.0,
+    "height_cm":        168.0,
+    "age":              26,
+    "activity_level":   "moderately_active",
+    "bmr":              1487,
+    "tdee":             2305,
+    "target_calories":  2608,
+    "calorie_strategy": "+300 surplus (lean bulk)",
+    "macros": {
+        "protein_g": 196,
+        "carbs_g":   293,
+        "fat_g":     72,
+        "protein_pct": 30,
+        "carbs_pct":   45,
+        "fat_pct":     25,
     },
+    "meal_timing_tips": [
+        "Eat 20-40g protein within 1-2 hours post-workout.",
+        "Front-load carbs around training windows.",
+        "Keep fat intake consistent throughout the day.",
+    ],
+}
+
+MOCK_PROGRESS_WIDGET = {
+    "widget_type":    "progress_line_chart",
+    "exercise":       "Bench Press",
+    "muscle_group":   "Chest",
+    "unit":           "kg",
+    "period_weeks":   8,
+    "data": [
+        {"date": "2026-06-16", "value": 65.0,  "unit": "kg"},
+        {"date": "2026-06-23", "value": 66.25, "unit": "kg"},
+        {"date": "2026-06-30", "value": 66.25, "unit": "kg"},
+        {"date": "2026-07-07", "value": 68.75, "unit": "kg"},
+        {"date": "2026-07-14", "value": 70.0,  "unit": "kg"},
+        {"date": "2026-07-21", "value": 70.0,  "unit": "kg"},
+        {"date": "2026-07-28", "value": 71.25, "unit": "kg"},
+        {"date": "2026-08-04", "value": 72.5,  "unit": "kg"},
+    ],
+    "current_pr":     72.5,
+    "starting_value": 65.0,
+    "total_gain":     7.5,
+    "gain_pct":       11.5,
+    "trend":          "up",
+    "trend_label":    "+7.5kg",
+    "summary":        "8-week Bench Press progression",
 }
 
 SESSIONS_TEMPLATE = [
     {
-        "title": "AAPL Stock Analysis",
+        "title": "Back Day Workout Plan",
         "messages": [
             {
                 "role":    "human",
-                "content": "What is the AAPL stock price today?",
+                "content": "Can you give me a back workout for muscle gain?",
             },
             {
                 "role":        "assistant",
-                "content":     (
-                    "AAPL is currently trading at **$187.42**, up **+2.36%** over the last 7 days. "
-                    "The stock has shown steady upward momentum with a 7-day high of $189.10. "
-                    "Here's the interactive chart for your reference."
+                "content": (
+                    "**Pull from every angle — here's your back day.** "
+                    "This session is built around vertical and horizontal pulling movements to hit your lats, rhomboids, and traps. "
+                    "Focus on a controlled 3-second eccentric (lowering phase) on every rep — that's where the growth happens. "
+                    "Keep rest periods strict to maintain intensity."
                 ),
-                "widget_json": MOCK_WIDGET,
+                "widget_json": MOCK_WORKOUT_WIDGET,
             },
             {
                 "role":    "human",
-                "content": "What about NVDA?",
+                "content": "How much protein should I eat for muscle gain?",
             },
             {
-                "role":    "assistant",
+                "role":        "assistant",
                 "content": (
-                    "NVDA is trading at approximately **$882.15**, with a **+3.1%** gain over the past 7 days. "
-                    "The stock has benefited from strong AI-driven demand for its GPU products. "
-                    "The 7-day high was $891.00 and the low was $851.00."
+                    "**Your TDEE is ~2,305 kcal — here's your muscle gain nutrition plan.** "
+                    "At a +300 kcal lean bulk surplus, you're targeting **2,608 kcal/day** to build muscle without excessive fat gain. "
+                    "Hit **196g protein** first (that's your non-negotiable), then fill carbs around your workout windows — "
+                    "your muscles will thank you for that glycogen. "
+                    "Prioritize whole foods: chicken, rice, eggs, Greek yogurt, oats."
                 ),
-                "widget_json": {
-                    **MOCK_WIDGET,
-                    "ticker": "NVDA",
-                    "title":  "NVDA — 7-Day Price Chart",
-                    "current_price": 882.15,
-                    "change":         26.5,
-                    "change_pct":      3.1,
-                },
+                "widget_json": MOCK_MACRO_WIDGET,
             },
         ],
     },
     {
-        "title": "Python async/await explained",
+        "title": "Bench Press Progress Check",
         "messages": [
             {
                 "role":    "human",
-                "content": "Can you explain async/await in Python?",
+                "content": "Show me my bench press progress over the last 8 weeks.",
             },
             {
-                "role":    "assistant",
+                "role":        "assistant",
                 "content": (
-                    "**async/await** in Python enables writing concurrent code without threads.\n\n"
-                    "- `async def` defines a **coroutine** — a function that can be paused and resumed.\n"
-                    "- `await` suspends the current coroutine until the awaited operation completes.\n"
-                    "- The event loop (`asyncio.run()`) orchestrates all concurrent coroutines.\n\n"
-                    "This is ideal for **I/O-bound** tasks like network requests, DB queries, and file I/O "
-                    "where you'd otherwise block waiting for responses."
+                    "**Impressive — +7.5kg on your bench press in 8 weeks!** "
+                    "That's an 11.5% strength increase, which is excellent for an intermediate lifter. "
+                    "Your progression has been consistent with two slight plateaus (weeks 2-3 and 5-6), which is completely normal — "
+                    "those are your body consolidating strength gains. "
+                    "**Next step:** consider a micro-load to 73.75kg next session and aim for 3×5 before moving to 4×8-12."
                 ),
+                "widget_json": MOCK_PROGRESS_WIDGET,
             },
             {
                 "role":    "human",
-                "content": "Show me a practical example.",
+                "content": "What should I do to break my plateau?",
             },
             {
                 "role":    "assistant",
                 "content": (
-                    "```python\nimport asyncio\nimport httpx\n\n"
-                    "async def fetch(url: str) -> dict:\n"
-                    "    async with httpx.AsyncClient() as client:\n"
-                    "        response = await client.get(url)\n"
-                    "        return response.json()\n\n"
-                    "async def main():\n"
-                    "    # Run two requests concurrently\n"
-                    "    results = await asyncio.gather(\n"
-                    "        fetch('https://api.github.com/users/torvalds'),\n"
-                    "        fetch('https://api.github.com/users/gvanrossum'),\n"
-                    "    )\n"
-                    "    for user in results:\n"
-                    "        print(user['login'], user['public_repos'])\n\n"
-                    "asyncio.run(main())\n```\n\n"
-                    "Both requests run **concurrently** — total time ≈ max(t1, t2), not t1 + t2."
+                    "Plateaus are data, not failure. Here's the Atlas protocol to break through:\n\n"
+                    "**1. Deload Week** — Reduce load by 40-50% for one week. This dissipates accumulated fatigue and often results in a PR the following week.\n\n"
+                    "**2. Variation** — Swap flat bench for incline or close-grip bench for 3-4 weeks. "
+                    "This addresses weak points (upper chest or triceps) that may be limiting your main lift.\n\n"
+                    "**3. Micro-loading** — Use 0.5-1.25kg micro-plates instead of jumping 2.5kg. "
+                    "Smaller increments sustain progress longer.\n\n"
+                    "**4. RPE-based loading** — Train to RPE 8-9 (2 reps in reserve) rather than fixed weights. "
+                    "This auto-regulates load based on daily readiness.\n\n"
+                    "Which approach do you want to try first?"
                 ),
             },
         ],
     },
     {
-        "title": "Conversation Summary",
+        "title": "Beginner Workout Q&A",
         "messages": [
             {
                 "role":    "human",
-                "content": "Can you summarize our conversation?",
+                "content": "I'm a complete beginner. Where do I even start?",
             },
             {
                 "role":    "assistant",
                 "content": (
-                    "Here's a summary of what we covered:\n\n"
-                    "**📈 Financial Data**\n"
-                    "- AAPL is trading at $187.42 (+2.36% / 7 days)\n"
-                    "- NVDA is trading at $882.15 (+3.1% / 7 days)\n\n"
-                    "**🐍 Python Async/Await**\n"
-                    "- `async def` defines coroutines; `await` suspends execution\n"
-                    "- Best for I/O-bound concurrency (HTTP requests, DB calls)\n"
-                    "- `asyncio.gather()` runs multiple coroutines concurrently"
+                    "Welcome — this is where the transformation starts. Here's the Atlas beginner blueprint:\n\n"
+                    "**Phase 1: Foundation (Weeks 1-8)**\n"
+                    "- Train **3 days/week** (Mon/Wed/Fri or similar) — full body each session.\n"
+                    "- Master 5 movements: **Squat, Hinge, Push, Pull, Core**.\n"
+                    "- Start lighter than you think you need to — perfect form is the #1 priority.\n\n"
+                    "**The Big 5 to learn first:**\n"
+                    "- Goblet Squat → Bodyweight Squat → Barbell Squat\n"
+                    "- Romanian Deadlift → Conventional Deadlift\n"
+                    "- Push-Up → Dumbbell Press → Bench Press\n"
+                    "- Assisted Pull-Up → Lat Pulldown → Pull-Up\n"
+                    "- Plank → Dead Bug → Ab Wheel\n\n"
+                    "**Progression rule:** Add 2.5kg when you complete all reps with perfect form. Simple, effective.\n\n"
+                    "Want me to generate your first week's full body workout plan?"
                 ),
             },
         ],
     },
+]
+
+PERSONAL_RECORDS_ALICE = [
+    {"exercise": "Bench Press",   "weight_kg": 72.5, "reps": 5},
+    {"exercise": "Barbell Squat", "weight_kg": 95.0, "reps": 5},
+    {"exercise": "Deadlift",      "weight_kg": 110.0,"reps": 3},
+    {"exercise": "Overhead Press","weight_kg": 45.0, "reps": 5},
+    {"exercise": "Barbell Row",   "weight_kg": 60.0, "reps": 5},
 ]
 
 
 # ─── Helpers ───────────────────────────────────────────────────────────────────
 
-
 async def _ensure_tables(conn: asyncpg.Connection) -> None:
-    """
-    Create application tables if they don't exist.
-    Schema definition mirrors app/infrastructure/database/connection.py (single source).
-    """
+    """Create all application tables (core + Atlas fitness) if they don't exist."""
     await conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -204,9 +268,59 @@ async def _ensure_tables(conn: asyncpg.Connection) -> None:
             created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
         CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id ON chat_messages(session_id);
+
+        -- Atlas fitness tables
+        CREATE TABLE IF NOT EXISTS user_fitness_profiles (
+            id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            fitness_level   VARCHAR(20) NOT NULL DEFAULT 'beginner',
+            goal            VARCHAR(30) NOT NULL DEFAULT 'general_fitness',
+            weight_kg       FLOAT,
+            height_cm       FLOAT,
+            age             INT,
+            activity_level  VARCHAR(30) NOT NULL DEFAULT 'moderately_active',
+            available_equip TEXT[]      NOT NULL DEFAULT '{}',
+            workout_days_pw INT         NOT NULL DEFAULT 3,
+            dietary_pref    VARCHAR(50),
+            created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(user_id)
+        );
+        CREATE TABLE IF NOT EXISTS workout_logs (
+            id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            exercise_name   VARCHAR(100) NOT NULL,
+            muscle_group    VARCHAR(50),
+            sets            INT,
+            reps            INT,
+            weight_kg       FLOAT,
+            duration_min    INT,
+            rpe             INT,
+            notes           TEXT,
+            logged_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+        CREATE TABLE IF NOT EXISTS meal_logs (
+            id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id     UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            meal_name   VARCHAR(150) NOT NULL,
+            meal_type   VARCHAR(20),
+            calories    INT,
+            protein_g   FLOAT,
+            carbs_g     FLOAT,
+            fat_g       FLOAT,
+            logged_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+        CREATE TABLE IF NOT EXISTS personal_records (
+            id               UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id          UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            exercise_name    VARCHAR(100) NOT NULL,
+            record_weight_kg FLOAT,
+            record_reps      INT,
+            achieved_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(user_id, exercise_name)
+        );
     """)
     print("  ✅ Tables verified")
-
 
 
 async def _seed_user(conn: asyncpg.Connection, email: str, password: str) -> str:
@@ -224,6 +338,51 @@ async def _seed_user(conn: asyncpg.Connection, email: str, password: str) -> str
     )
     print(f"  ✅ Created user: {email}")
     return user_id
+
+
+async def _seed_fitness_profile(conn: asyncpg.Connection, user_id: str, profile: dict) -> None:
+    existing = await conn.fetchrow("SELECT id FROM user_fitness_profiles WHERE user_id = $1", user_id)
+    if existing:
+        print("  ℹ️  Fitness profile already exists")
+        return
+
+    await conn.execute(
+        """
+        INSERT INTO user_fitness_profiles
+            (user_id, fitness_level, goal, weight_kg, height_cm, age,
+             activity_level, available_equip, workout_days_pw, dietary_pref)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        """,
+        user_id,
+        profile["fitness_level"],
+        profile["goal"],
+        profile["weight_kg"],
+        profile["height_cm"],
+        profile["age"],
+        profile["activity_level"],
+        profile["available_equip"],
+        profile["workout_days_pw"],
+        profile["dietary_pref"],
+    )
+    print(f"  ✅ Fitness profile: {profile['goal']} / {profile['fitness_level']}")
+
+
+async def _seed_personal_records(conn: asyncpg.Connection, user_id: str) -> None:
+    for pr in PERSONAL_RECORDS_ALICE:
+        existing = await conn.fetchrow(
+            "SELECT id FROM personal_records WHERE user_id = $1 AND exercise_name = $2",
+            user_id, pr["exercise"]
+        )
+        if existing:
+            continue
+        await conn.execute(
+            """
+            INSERT INTO personal_records (user_id, exercise_name, record_weight_kg, record_reps)
+            VALUES ($1, $2, $3, $4)
+            """,
+            user_id, pr["exercise"], pr["weight_kg"], pr["reps"],
+        )
+    print(f"  ✅ Personal records: {len(PERSONAL_RECORDS_ALICE)} PRs seeded")
 
 
 async def _seed_sessions(conn: asyncpg.Connection, user_id: str) -> None:
@@ -259,7 +418,7 @@ async def _seed_sessions(conn: asyncpg.Connection, user_id: str) -> None:
 
 async def main() -> None:
     print()
-    print("🌱  personalized_ai_agent — Database Seeder")
+    print("🏋️  Atlas AI — Database Seeder")
     print("─" * 48)
     print(f"📡  Connecting to PostgreSQL...")
 
@@ -271,7 +430,12 @@ async def main() -> None:
         for user_data in USERS:
             print(f"\n👤  Seeding: {user_data['email']}")
             user_id = await _seed_user(conn, user_data["email"], user_data["password"])
-            await _seed_sessions(conn, user_id)
+            await _seed_fitness_profile(conn, user_id, user_data["profile"])
+
+            # Only seed PRs and full sessions for Alice (primary test user)
+            if user_data["email"] == "alice@example.com":
+                await _seed_personal_records(conn, user_id)
+                await _seed_sessions(conn, user_id)
 
         print()
         print("─" * 48)
@@ -282,6 +446,7 @@ async def main() -> None:
         for u in USERS:
             print(f"   Email    : {u['email']}")
             print(f"   Password : {u['password']}")
+            print(f"   Goal     : {u['profile']['goal']} / {u['profile']['fitness_level']}")
             print()
         print("🚀  Login  → POST http://localhost:8000/api/auth/login")
         print("📖  Docs   → http://localhost:8000/docs")

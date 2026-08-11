@@ -5,7 +5,7 @@ Database initialization and connection management.
 
 Two drivers are used intentionally:
   - asyncpg  : High-performance async driver for our application tables
-                (users, chat_sessions, chat_messages).
+                (users, chat_sessions, chat_messages, and Atlas fitness tables).
   - psycopg3 : Required by LangGraph's AsyncPostgresSaver checkpointer.
 Both connect to the same PostgreSQL instance.
 """
@@ -125,4 +125,67 @@ async def _create_app_tables(conn: asyncpg.Connection) -> None:
         );
         CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id
             ON chat_messages(session_id);
+
+        -- ── Atlas AI: Fitness Domain Tables ───────────────────────────────────
+
+        -- Extended fitness profile per user
+        CREATE TABLE IF NOT EXISTS user_fitness_profiles (
+            id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            fitness_level   VARCHAR(20) NOT NULL DEFAULT 'beginner',
+            goal            VARCHAR(30) NOT NULL DEFAULT 'general_fitness',
+            weight_kg       FLOAT,
+            height_cm       FLOAT,
+            age             INT,
+            activity_level  VARCHAR(30) NOT NULL DEFAULT 'moderately_active',
+            available_equip TEXT[]      NOT NULL DEFAULT '{}',
+            workout_days_pw INT         NOT NULL DEFAULT 3,
+            dietary_pref    VARCHAR(50),
+            created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(user_id)
+        );
+
+        -- Individual exercise set logs
+        CREATE TABLE IF NOT EXISTS workout_logs (
+            id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            exercise_name   VARCHAR(100) NOT NULL,
+            muscle_group    VARCHAR(50),
+            sets            INT,
+            reps            INT,
+            weight_kg       FLOAT,
+            duration_min    INT,
+            rpe             INT,
+            notes           TEXT,
+            logged_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_workout_logs_user_id
+            ON workout_logs(user_id);
+
+        -- Daily meal and nutrition logs
+        CREATE TABLE IF NOT EXISTS meal_logs (
+            id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id     UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            meal_name   VARCHAR(150) NOT NULL,
+            meal_type   VARCHAR(20),
+            calories    INT,
+            protein_g   FLOAT,
+            carbs_g     FLOAT,
+            fat_g       FLOAT,
+            logged_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_meal_logs_user_id
+            ON meal_logs(user_id);
+
+        -- Personal records (PRs) per exercise
+        CREATE TABLE IF NOT EXISTS personal_records (
+            id               UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id          UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            exercise_name    VARCHAR(100) NOT NULL,
+            record_weight_kg FLOAT,
+            record_reps      INT,
+            achieved_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(user_id, exercise_name)
+        );
     """)

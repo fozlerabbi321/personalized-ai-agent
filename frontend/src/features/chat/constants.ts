@@ -1,19 +1,19 @@
-import { TrendingUp, Code2, Layers } from "lucide-react";
+import { Dumbbell, Flame, TrendingUp } from "lucide-react";
 
 export const SUGGESTED_PROMPTS = [
   {
-    title: "Bitcoin Market & OHLC Chart",
-    prompt: "Show me BTC price and market analysis",
+    title: "Workout Plan",
+    prompt: "Give me a back day workout for muscle gain",
+    icon: Dumbbell,
+  },
+  {
+    title: "Macro Calculator",
+    prompt: "Calculate my macros. I'm 75kg, 178cm, 25 years old, moderately active, goal: muscle gain",
+    icon: Flame,
+  },
+  {
+    title: "Progress Check",
+    prompt: "Show me my bench press progress over the last 8 weeks",
     icon: TrendingUp,
-  },
-  {
-    title: "Python Async/Await",
-    prompt: "Explain Python async/await concurrency with an example.",
-    icon: Code2,
-  },
-  {
-    title: "Summarize History",
-    prompt: "Summarize our conversation so far.",
-    icon: Layers,
   },
 ] as const;

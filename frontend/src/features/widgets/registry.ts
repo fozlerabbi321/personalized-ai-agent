@@ -1,12 +1,16 @@
 import React from "react";
-import { CandlestickChart } from "./components/CandlestickChart";
-import { MetricCard } from "./components/MetricCard";
-import { DataTable } from "./components/DataTable";
-import { WidgetType } from "./constants";
-import { WidgetPayload } from "./types";
+import { WorkoutPlanWidget }  from "./components/WorkoutPlanWidget";
+import { MacroDonutChart }    from "./components/MacroDonutChart";
+import { ProgressLineChart }  from "./components/ProgressLineChart";
+import { ExerciseCard }       from "./components/ExerciseCard";
+import { StreakHeatmap }      from "./components/StreakHeatmap";
+import { WidgetType }         from "./constants";
+import { WidgetPayload }      from "./types";
 
 export const widgetRegistry: Record<string, React.ComponentType<WidgetPayload>> = {
-  [WidgetType.CANDLESTICK_CHART]: CandlestickChart as unknown as React.ComponentType<WidgetPayload>,
-  [WidgetType.METRIC_CARD]: MetricCard as unknown as React.ComponentType<WidgetPayload>,
-  [WidgetType.DATA_TABLE]: DataTable as unknown as React.ComponentType<WidgetPayload>,
+  [WidgetType.WORKOUT_PLAN]:        WorkoutPlanWidget  as unknown as React.ComponentType<WidgetPayload>,
+  [WidgetType.MACRO_DONUT_CHART]:   MacroDonutChart    as unknown as React.ComponentType<WidgetPayload>,
+  [WidgetType.PROGRESS_LINE_CHART]: ProgressLineChart  as unknown as React.ComponentType<WidgetPayload>,
+  [WidgetType.EXERCISE_CARD]:       ExerciseCard       as unknown as React.ComponentType<WidgetPayload>,
+  [WidgetType.STREAK_HEATMAP]:      StreakHeatmap      as unknown as React.ComponentType<WidgetPayload>,
 };

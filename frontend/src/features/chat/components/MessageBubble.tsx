@@ -51,7 +51,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           ) : message.isStreaming ? (
             <span className="inline-flex items-center gap-1.5 text-gray-400 font-medium text-xs">
               <span className="h-2 w-2 rounded-full bg-indigo-500 animate-ping" />
-              Athena is thinking...
+              Atlas is thinking...
             </span>
           ) : (
             <span className="text-gray-500 italic">No content</span>

@@ -29,7 +29,7 @@ class AgentState(TypedDict):
     user_id: str
 
     # Routing
-    intent: str           # "api_call" | "summary" | "general"
+    intent: str           # "workout" | "nutrition" | "progress" | "summary" | "general"
     iteration_count: int
 
     # Output payload

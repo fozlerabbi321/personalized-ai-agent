@@ -1,7 +1,7 @@
 import { AuthGate } from "@/features/auth/components/AuthGate";
 
 export const metadata = {
-  title: "Athena | Personalized AI Assistant",
+  title: "Atlas | Personalized AI Assistant",
   description: "Enterprise-grade personalized AI agent powered by FastAPI & LangGraph",
 };
 

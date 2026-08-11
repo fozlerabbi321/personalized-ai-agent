@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from langchain_core.messages import AIMessage, SystemMessage
 
-from app.agent.prompts import build_athena_system_prompt
+from app.agent.prompts import build_atlas_system_prompt
 from app.agent.state import AgentState
 from app.core.utils import extract_text
 from app.infrastructure.ai.llm_provider import TEMPERATURE_BALANCED, get_llm
@@ -10,12 +10,12 @@ from app.infrastructure.ai.llm_provider import TEMPERATURE_BALANCED, get_llm
 
 async def general_response_node(state: AgentState) -> dict:
     """
-    Handle general queries with a direct Gemini response as Athena.
+    Handle general fitness queries with a direct Gemini response as Atlas.
     Tokens from this node ARE streamed to the client.
-    Athena's persona, dynamic tone rules, and chat history preferences are injected.
+    Atlas's persona, dynamic tone rules, and chat history preferences are injected.
     """
     raw_messages = list(state.get("messages", []))
-    system_prompt = build_athena_system_prompt(raw_messages)
+    system_prompt = build_atlas_system_prompt(raw_messages)
 
     messages = [SystemMessage(content=system_prompt)] + raw_messages
 
@@ -29,4 +29,3 @@ async def general_response_node(state: AgentState) -> dict:
         "widget_json":   None,
         "is_final":      True,
     }
-
