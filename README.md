@@ -1,6 +1,21 @@
-# 🤖 Personalized AI Agent (Athena AI)
+# 🤖 Personalized AI Agent — Multi-Domain Portfolio
 
 > **A Full-Stack AI System powered by FastAPI, LangGraph, LangSmith, Google Gemini (can use ANY LLM), PostgreSQL, and Next.js 14 with Server-Driven UI (SDUI) Streaming.**
+
+---
+
+## 🌿 Project Variants — Multi-Branch Portfolio
+
+This repository contains **4 fully independent AI agent variants**, each living on its own Git branch. All variants share the same battle-tested infrastructure (FastAPI, LangGraph, SSE Streaming, PostgreSQL, JWT Auth, SDUI). Only the **domain layer** (prompts, nodes, widgets, DB schema) changes per branch.
+
+| Branch | Agent | Domain | Theme | Status |
+|---|---|---|---|---|
+| [`dev`](../../tree/dev) | 💪 **Atlas** | Fitness Coach & Nutrition Advisor | 🟠 Charcoal + Orange | 🟢 **Active Development** |
+| [`feat/nova-learning`](../../tree/feat/nova-learning) | 🎓 **Nova** | Personalized Learning Tutor | 🟣 Indigo + Violet | 🔵 Planned |
+| [`feat/lumen-books`](../../tree/feat/lumen-books) | 📚 **Lumen** | Book Recommender & Literary Guide | 🟡 Amber + Gold | 🔵 Planned |
+| [`feat/kairo-career`](../../tree/feat/kairo-career) | 💼 **Kairo** | Career Coach & Interview Prep | 🔵 Navy + Gold | 🔵 Planned |
+
+> **Currently viewing:** `dev` branch — **Atlas AI (Fitness Coach)**. Switch branches above to explore other agent variants.
 
 ---
 
