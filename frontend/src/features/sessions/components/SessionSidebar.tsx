@@ -36,7 +36,7 @@ export function SessionSidebar({
             <Sparkles className="h-4 w-4" />
           </div>
           <div>
-            <h1 className="text-xs font-bold text-white tracking-wide">Athena AI</h1>
+            <h1 className="text-xs font-bold text-white tracking-wide">Kairo AI</h1>
             <p className="text-[10px] text-gray-400 font-medium">Personalized Agent</p>
           </div>
         </div>

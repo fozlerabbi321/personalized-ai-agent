@@ -12,7 +12,7 @@ export default function ChatPage() {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-[#090d16] text-gray-300 gap-3 text-sm">
         <Spinner className="h-6 w-6 text-indigo-500" />
-        <span>Loading Athena AI...</span>
+        <span>Loading Kairo AI...</span>
       </div>
     );
   }

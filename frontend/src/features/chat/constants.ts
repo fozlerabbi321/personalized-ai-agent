@@ -1,19 +1,19 @@
-import { TrendingUp, Code2, Layers } from "lucide-react";
+import { Briefcase, FileText, Map } from "lucide-react";
 
 export const SUGGESTED_PROMPTS = [
   {
-    title: "Bitcoin Market & OHLC Chart",
-    prompt: "Show me BTC price and market analysis",
-    icon: TrendingUp,
+    title: "Mock Interview Practice",
+    prompt: "Let's do a behavioral interview question for a Software Engineer position",
+    icon: Briefcase,
   },
   {
-    title: "Python Async/Await",
-    prompt: "Explain Python async/await concurrency with an example.",
-    icon: Code2,
+    title: "Resume Review & Rewrites",
+    prompt: "Can you review my resume bullet points and suggest improvements?",
+    icon: FileText,
   },
   {
-    title: "Summarize History",
-    prompt: "Summarize our conversation so far.",
-    icon: Layers,
+    title: "Senior Engineer Roadmap",
+    prompt: "How can I transition from Mid-Level to Senior Software Engineer?",
+    icon: Map,
   },
 ] as const;

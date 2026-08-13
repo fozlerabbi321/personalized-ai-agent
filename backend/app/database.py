@@ -125,4 +125,32 @@ async def _create_app_tables(conn: asyncpg.Connection) -> None:
         );
         CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id
             ON chat_messages(session_id);
+
+        -- ── Kairo AI: Career Domain Tables ─────────────────────────────────────
+
+        -- Extended career profile per user
+        CREATE TABLE IF NOT EXISTS user_career_profiles (
+            id                  UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id             UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            target_role         VARCHAR(100) NOT NULL DEFAULT 'Software Engineer',
+            experience_level    VARCHAR(30) NOT NULL DEFAULT 'mid_level',
+            target_salary       VARCHAR(50),
+            primary_stack       TEXT[]      NOT NULL DEFAULT '{}',
+            created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(user_id)
+        );
+
+        -- Interview practice logs
+        CREATE TABLE IF NOT EXISTS interview_practice_logs (
+            id                  UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id             UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            question            TEXT        NOT NULL,
+            interview_type      VARCHAR(50) NOT NULL,
+            feedback_score      INT         CHECK (feedback_score >= 1 AND feedback_score <= 100),
+            user_notes          TEXT,
+            practiced_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_interview_practice_logs_user_id
+            ON interview_practice_logs(user_id);
     """)
