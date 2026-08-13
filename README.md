@@ -14,7 +14,7 @@ This repository contains **4 fully independent AI agent variants**, each on its 
 | [`feat/nova-learning`](../../tree/feat/nova-learning) | 🎓 **Nova** | Personalized Learning Tutor | 🟣 Indigo + Violet | 🔵 Planned |
 | [`feat/lumen-books`](../../tree/feat/lumen-books) | 📚 **Lumen** | Book Recommender & Literary Guide | 🟡 Amber + Gold | 🔵 Planned |
 | [`feat/kairo-career`](../../tree/feat/kairo-career) | 💼 **Kairo** | Career Coach & Interview Prep | 🔵 Navy + Gold | 🔵 Planned |
-
+| [`feat/athena-bitcoin`](../../tree/feat/athena-bitcoin) | ₿ **Athena** | Bitcoin Trader Coach & Market Analyst | 💰 Yellow + Gold | 🔵 Planned |
 > **Currently viewing:** `dev` branch — **Atlas AI (Fitness Coach)**. Switch branches above to explore other agent variants.
 
 ---
