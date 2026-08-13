@@ -1,65 +1,47 @@
 from __future__ import annotations
 
 """
-Agent constants — centralized configuration for the LangGraph agent.
+Agent constants — centralized configuration for the Lumen AI LangGraph agent.
 
-Previously scattered across:
-  - ``api/chat.py``           (_STREAMING_NODES)
-  - ``agent/nodes/api_call.py`` (_KNOWN_TICKERS, base_prices dict inline)
-
-Centralizing here ensures a single source of truth and makes it trivial
-to add new tickers, widget types, or streaming nodes.
+Domain: Book Recommender & Literary Guide (Lumen AI)
+Branch: feat/lumen-books
 """
 
 # ── SSE Streaming ─────────────────────────────────────────────────────────────
 
-# Nodes whose LLM output tokens are forwarded to the client as SSE "token" events.
-# The llm_decision node is intentionally excluded — its routing tokens are internal.
-STREAMING_NODES: frozenset[str] = frozenset({"api_call", "summary", "general"})
+STREAMING_NODES: frozenset[str] = frozenset({
+    "recommend", "review", "challenge", "summary", "general"
+})
 
 
 # ── Intent Values ─────────────────────────────────────────────────────────────
 
 class Intent:
     """Valid intent values set by the llm_decision_node."""
-    API_CALL = "api_call"
-    SUMMARY  = "summary"
-    GENERAL  = "general"
+    RECOMMEND = "recommend"
+    REVIEW    = "review"
+    CHALLENGE = "challenge"
+    SUMMARY   = "summary"
+    GENERAL   = "general"
 
-    ALL: frozenset[str] = frozenset({API_CALL, SUMMARY, GENERAL})
+    ALL: frozenset[str] = frozenset({RECOMMEND, REVIEW, CHALLENGE, SUMMARY, GENERAL})
 
 
-# ── Financial Tickers ─────────────────────────────────────────────────────────
+# ── Literary Domain Constants ──────────────────────────────────────────────────
 
-# All known tickers that can be detected from user messages.
-# Ordered: longer/more specific tickers first to prevent partial matches.
-KNOWN_TICKERS: list[str] = [
-    "GOOGL", "GOOG",                            # Alphabet (check before AAPL to avoid overlap)
-    "AAPL", "MSFT", "TSLA", "AMZN", "META",
-    "NVDA", "NFLX", "AMD", "INTC",
-    "BTC", "ETH",
-    "SPY", "QQQ",
+GENRES: list[str] = [
+    "Fiction", "Non-Fiction", "Sci-Fi", "Fantasy", "Mystery", "Thriller",
+    "Romance", "Historical Fiction", "Biography", "Self-Help", "Psychology",
+    "Philosophy", "Business", "Technology", "Poetry", "Classics", "YA",
 ]
 
-# Anchor prices for mock OHLC random-walk generation.
-# Kept here so they're easy to update without digging into node logic.
-BASE_PRICES: dict[str, float] = {
-    "AAPL":  187.0,
-    "GOOGL": 175.0,
-    "GOOG":  175.0,
-    "MSFT":  420.0,
-    "TSLA":  245.0,
-    "AMZN":  195.0,
-    "META":  535.0,
-    "NVDA":  880.0,
-    "NFLX":  640.0,
-    "AMD":   165.0,
-    "INTC":   35.0,
-    "BTC":  67000.0,
-    "ETH":   3500.0,
-    "SPY":   540.0,
-    "QQQ":   470.0,
-}
+READING_PACES: list[str] = ["fast", "moderate", "slow", "casual"]
 
-DEFAULT_TICKER = "AAPL"
-DEFAULT_BASE_PRICE = 100.0
+BOOK_LENGTHS: list[str] = [
+    "short (< 200 pages)",
+    "medium (200-400 pages)",
+    "long (400+ pages)",
+]
+
+DEFAULT_GENRE = "Fiction"
+DEFAULT_GOAL_BOOKS_PER_YEAR = 12

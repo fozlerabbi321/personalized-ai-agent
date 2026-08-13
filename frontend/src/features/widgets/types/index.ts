@@ -1,47 +1,63 @@
-export interface OHLCItem {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume?: number;
-}
+// ── Lumen AI Widget Payload Types ─────────────────────────────────────────────
 
-export interface CandlestickWidgetPayload {
-  widget_type: "candlestick_chart";
-  ticker: string;
+export interface RecommendedBook {
   title: string;
-  current_price: number;
-  change: number;
-  change_pct: number;
-  seven_day_high: number;
-  seven_day_low: number;
-  data: OHLCItem[];
-  metric?: {
-    label: string;
-    value: string;
-    delta: string;
-    sentiment?: "positive" | "negative" | "neutral";
-  };
+  author: string;
+  rating: number;
+  pages: number;
+  published_year: number;
+  genre: string;
+  cover_theme?: string;
+  tagline: string;
+  match_reason: string;
+  isbn?: string;
 }
 
-export interface MetricCardWidgetPayload {
-  widget_type: "metric_card";
-  label: string;
-  value: string;
-  delta?: string;
-  sentiment?: "positive" | "negative" | "neutral";
-  subtitle?: string;
+export interface BookCardPayload {
+  widget_type: "book_card";
+  genre: string;
+  total_matches: number;
+  recommend_note: string;
+  books: RecommendedBook[];
 }
 
-export interface DataTableWidgetPayload {
-  widget_type: "data_table";
-  title?: string;
-  columns: string[];
-  rows: Array<Record<string, string | number>>;
+export interface BookReviewPayload {
+  widget_type: "book_review";
+  title: string;
+  author: string;
+  published_year: number;
+  genre: string;
+  rating: number;
+  summary: string;
+  themes: string[];
+  key_takeaways: string[];
+  memorable_quote: string;
+  reading_time_hours: number;
+  target_audience: string;
+}
+
+export interface RecentRead {
+  title: string;
+  author: string;
+  rating: number;
+  finished_date: string;
+}
+
+export interface ReadingTrackerPayload {
+  widget_type: "reading_tracker";
+  annual_target: number;
+  books_read: number;
+  completion_pct: number;
+  pages_read: number;
+  current_streak_days: number;
+  longest_streak_days: number;
+  favorite_genre: string;
+  status_label: string;
+  year: number;
+  recent_books: RecentRead[];
 }
 
 export type WidgetPayload =
-  | CandlestickWidgetPayload
-  | MetricCardWidgetPayload
-  | DataTableWidgetPayload;
+  | BookCardPayload
+  | BookReviewPayload
+  | ReadingTrackerPayload;

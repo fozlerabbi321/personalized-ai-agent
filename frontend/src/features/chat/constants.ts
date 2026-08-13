@@ -1,19 +1,19 @@
-import { TrendingUp, Code2, Layers } from "lucide-react";
+import { BookOpen, Star, Trophy } from "lucide-react";
 
 export const SUGGESTED_PROMPTS = [
   {
-    title: "Bitcoin Market & OHLC Chart",
-    prompt: "Show me BTC price and market analysis",
-    icon: TrendingUp,
+    title: "Book Recommendations",
+    prompt: "Recommend me some great sci-fi books",
+    icon: BookOpen,
   },
   {
-    title: "Python Async/Await",
-    prompt: "Explain Python async/await concurrency with an example.",
-    icon: Code2,
+    title: "Book Review & Themes",
+    prompt: "Can you give me a review and theme analysis of Dune?",
+    icon: Star,
   },
   {
-    title: "Summarize History",
-    prompt: "Summarize our conversation so far.",
-    icon: Layers,
+    title: "Reading Challenge",
+    prompt: "How am I doing on my 2026 reading challenge?",
+    icon: Trophy,
   },
 ] as const;

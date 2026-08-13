@@ -125,4 +125,33 @@ async def _create_app_tables(conn: asyncpg.Connection) -> None:
         );
         CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id
             ON chat_messages(session_id);
+
+        -- ── Lumen AI: Literary Domain Tables ───────────────────────────────────
+
+        -- Extended reader profile per user
+        CREATE TABLE IF NOT EXISTS user_reader_profiles (
+            id                    UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id               UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            favorite_genres       TEXT[]      NOT NULL DEFAULT '{}',
+            annual_goal_books     INT         NOT NULL DEFAULT 12,
+            reading_pace          VARCHAR(20) NOT NULL DEFAULT 'moderate',
+            created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(user_id)
+        );
+
+        -- Personal bookshelf tracker
+        CREATE TABLE IF NOT EXISTS user_bookshelf (
+            id                    UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id               UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            title                 VARCHAR(255) NOT NULL,
+            author                VARCHAR(255) NOT NULL,
+            status                VARCHAR(30) NOT NULL DEFAULT 'want_to_read', -- want_to_read, reading, finished
+            rating                INT         CHECK (rating >= 1 AND rating <= 5),
+            user_notes            TEXT,
+            added_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            finished_at           TIMESTAMPTZ
+        );
+        CREATE INDEX IF NOT EXISTS idx_user_bookshelf_user_id
+            ON user_bookshelf(user_id);
     """)

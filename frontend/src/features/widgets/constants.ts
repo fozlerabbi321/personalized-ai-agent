@@ -1,5 +1,5 @@
 export enum WidgetType {
-  CANDLESTICK_CHART = "candlestick_chart",
-  METRIC_CARD = "metric_card",
-  DATA_TABLE = "data_table",
+  BOOK_CARD       = "book_card",
+  BOOK_REVIEW     = "book_review",
+  READING_TRACKER = "reading_tracker",
 }
