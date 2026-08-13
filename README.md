@@ -29,6 +29,30 @@ Atlas remembers your fitness goals, equipment, training history, and preferences
 
 ---
 
+## 🖼️ Application Showcase & Screenshots
+
+<div align="center">
+
+### 1. **Atlas AI Assistant & Real-Time Chat Interface**
+![Atlas AI Chat Interface](screenshorts/image_1.png)
+*Interactive chat window featuring multi-turn conversation memory, stream status indicators, and prompt recommendations.*
+
+<br/>
+
+### 2. **Server-Driven UI (SDUI) — Interactive Charts & Analytics**
+![Server-Driven UI Candlestick Widget](screenshorts/image_2.png)
+*Dynamic SDUI widget rendering interactive by the LangGraph backend.*
+
+<br/>
+
+### 3. **Authentication & Session History Management**
+![Authentication & Session Sidebar](screenshorts/image_3.png)
+*JWT-authenticated user dashboard with persistent thread history, session switching, and single-click chat deletion.*
+
+</div>
+
+---
+
 ## 🔥 Key Technical Highlights
 
 - 🧠 **LangGraph Stateful Agent**: 5-node DAG — `llm_decision` → `workout` / `nutrition` / `progress` / `summary` / `general`. Each node is a domain-specialized Gemini invocation.
