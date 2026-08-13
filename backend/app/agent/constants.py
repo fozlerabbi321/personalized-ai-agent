@@ -1,65 +1,68 @@
 from __future__ import annotations
 
 """
-Agent constants — centralized configuration for the LangGraph agent.
+Agent constants — centralized configuration for the Nova AI LangGraph agent.
 
-Previously scattered across:
-  - ``api/chat.py``           (_STREAMING_NODES)
-  - ``agent/nodes/api_call.py`` (_KNOWN_TICKERS, base_prices dict inline)
-
-Centralizing here ensures a single source of truth and makes it trivial
-to add new tickers, widget types, or streaming nodes.
+Domain: Personalized Learning & Language Tutor (Nova AI)
+Branch: feat/nova-learning
 """
 
 # ── SSE Streaming ─────────────────────────────────────────────────────────────
 
-# Nodes whose LLM output tokens are forwarded to the client as SSE "token" events.
-# The llm_decision node is intentionally excluded — its routing tokens are internal.
-STREAMING_NODES: frozenset[str] = frozenset({"api_call", "summary", "general"})
+STREAMING_NODES: frozenset[str] = frozenset({
+    "quiz", "explain", "roadmap", "summary", "general"
+})
 
 
 # ── Intent Values ─────────────────────────────────────────────────────────────
 
 class Intent:
     """Valid intent values set by the llm_decision_node."""
-    API_CALL = "api_call"
-    SUMMARY  = "summary"
-    GENERAL  = "general"
+    QUIZ    = "quiz"
+    EXPLAIN = "explain"
+    ROADMAP = "roadmap"
+    SUMMARY = "summary"
+    GENERAL = "general"
 
-    ALL: frozenset[str] = frozenset({API_CALL, SUMMARY, GENERAL})
+    ALL: frozenset[str] = frozenset({QUIZ, EXPLAIN, ROADMAP, SUMMARY, GENERAL})
 
 
-# ── Financial Tickers ─────────────────────────────────────────────────────────
+# ── Learning Domain Constants ──────────────────────────────────────────────────
 
-# All known tickers that can be detected from user messages.
-# Ordered: longer/more specific tickers first to prevent partial matches.
-KNOWN_TICKERS: list[str] = [
-    "GOOGL", "GOOG",                            # Alphabet (check before AAPL to avoid overlap)
-    "AAPL", "MSFT", "TSLA", "AMZN", "META",
-    "NVDA", "NFLX", "AMD", "INTC",
-    "BTC", "ETH",
-    "SPY", "QQQ",
+KNOWN_SUBJECTS: list[str] = [
+    # Programming
+    "Python", "JavaScript", "TypeScript", "Kotlin", "Dart", "Java",
+    "C++", "C", "Go", "Rust", "Swift", "PHP",
+    # CS Fundamentals
+    "Data Structures", "Algorithms", "System Design", "Computer Science",
+    "Operating Systems", "Networking", "Database",
+    # Math & Science
+    "Mathematics", "Linear Algebra", "Statistics", "Calculus", "Probability",
+    "Physics", "Chemistry", "Biology",
+    # AI/ML
+    "Machine Learning", "Deep Learning", "Computer Vision",
+    "Natural Language Processing", "LLMs", "Data Science",
+    # Web & Mobile
+    "React", "Next.js", "Flutter", "Android", "iOS",
+    # Languages
+    "English", "Bengali", "Spanish", "French", "German", "Japanese",
+    # Other
+    "History", "Economics", "Philosophy", "Psychology",
 ]
 
-# Anchor prices for mock OHLC random-walk generation.
-# Kept here so they're easy to update without digging into node logic.
-BASE_PRICES: dict[str, float] = {
-    "AAPL":  187.0,
-    "GOOGL": 175.0,
-    "GOOG":  175.0,
-    "MSFT":  420.0,
-    "TSLA":  245.0,
-    "AMZN":  195.0,
-    "META":  535.0,
-    "NVDA":  880.0,
-    "NFLX":  640.0,
-    "AMD":   165.0,
-    "INTC":   35.0,
-    "BTC":  67000.0,
-    "ETH":   3500.0,
-    "SPY":   540.0,
-    "QQQ":   470.0,
-}
+DIFFICULTY_LEVELS: list[str] = ["beginner", "intermediate", "advanced", "expert"]
 
-DEFAULT_TICKER = "AAPL"
-DEFAULT_BASE_PRICE = 100.0
+QUESTION_TYPES: list[str] = [
+    "mcq",           # Multiple choice (4 options)
+    "true_false",    # True / False
+    "fill_blank",    # Fill in the blank
+    "short_answer",  # Open-ended short answer
+    "code_challenge",# Write / debug code
+]
+
+XP_PER_CORRECT: int = 10
+XP_PER_ROADMAP: int = 25
+STREAK_BONUS_XP: int = 5
+
+DEFAULT_SKILL_LEVEL = "beginner"
+DEFAULT_LANGUAGE    = "en"

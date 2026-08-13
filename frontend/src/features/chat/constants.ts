@@ -1,19 +1,19 @@
-import { TrendingUp, Code2, Layers } from "lucide-react";
+import { BrainCircuit, BookOpen, Map } from "lucide-react";
 
 export const SUGGESTED_PROMPTS = [
   {
-    title: "Bitcoin Market & OHLC Chart",
-    prompt: "Show me BTC price and market analysis",
-    icon: TrendingUp,
+    title: "Python Quiz",
+    prompt: "Quiz me on Python intermediate level",
+    icon: BrainCircuit,
   },
   {
-    title: "Python Async/Await",
-    prompt: "Explain Python async/await concurrency with an example.",
-    icon: Code2,
+    title: "Explain Concept",
+    prompt: "Explain recursion to me with an analogy and example",
+    icon: BookOpen,
   },
   {
-    title: "Summarize History",
-    prompt: "Summarize our conversation so far.",
-    icon: Layers,
+    title: "Study Roadmap",
+    prompt: "Give me a 6-week Python study roadmap for beginners",
+    icon: Map,
   },
 ] as const;

@@ -3,7 +3,7 @@ from __future__ import annotations
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.agent.constants import Intent
-from app.agent.prompts import build_athena_router_prompt
+from app.agent.prompts import build_nova_router_prompt
 from app.agent.state import AgentState
 from app.core.utils import extract_text
 from app.infrastructure.ai.llm_provider import TEMPERATURE_DETERMINISTIC, get_llm
@@ -11,15 +11,14 @@ from app.infrastructure.ai.llm_provider import TEMPERATURE_DETERMINISTIC, get_ll
 
 async def llm_decision_node(state: AgentState) -> dict:
     """
-    Classify the user's intent and set `state.intent`.
-    This node's LLM tokens are intentionally NOT streamed to the client
-    (filtered by langgraph_node metadata in the SSE endpoint).
+    Classify the user's learning intent and set `state.intent`.
+    This node's tokens are NOT streamed to the client.
     """
     messages = state.get("messages", [])
     last_msg = messages[-1] if messages else None
     last_message = extract_text(last_msg.content) if last_msg else ""
 
-    router_prompt = build_athena_router_prompt(messages)
+    router_prompt = build_nova_router_prompt(messages)
 
     llm = get_llm(TEMPERATURE_DETERMINISTIC)
     response = await llm.ainvoke([
@@ -35,4 +34,3 @@ async def llm_decision_node(state: AgentState) -> dict:
         "intent": intent,
         "iteration_count": state.get("iteration_count", 0) + 1,
     }
-

@@ -1,12 +1,12 @@
 import React from "react";
-import { CandlestickChart } from "./components/CandlestickChart";
-import { MetricCard } from "./components/MetricCard";
-import { DataTable } from "./components/DataTable";
+import { QuizWidget } from "./components/QuizWidget";
+import { ConceptTable } from "./components/ConceptTable";
+import { StudyRoadmap } from "./components/StudyRoadmap";
 import { WidgetType } from "./constants";
 import { WidgetPayload } from "./types";
 
 export const widgetRegistry: Record<string, React.ComponentType<WidgetPayload>> = {
-  [WidgetType.CANDLESTICK_CHART]: CandlestickChart as unknown as React.ComponentType<WidgetPayload>,
-  [WidgetType.METRIC_CARD]: MetricCard as unknown as React.ComponentType<WidgetPayload>,
-  [WidgetType.DATA_TABLE]: DataTable as unknown as React.ComponentType<WidgetPayload>,
+  [WidgetType.QUIZ_WIDGET]: QuizWidget as unknown as React.ComponentType<WidgetPayload>,
+  [WidgetType.CONCEPT_TABLE]: ConceptTable as unknown as React.ComponentType<WidgetPayload>,
+  [WidgetType.STUDY_ROADMAP]: StudyRoadmap as unknown as React.ComponentType<WidgetPayload>,
 };

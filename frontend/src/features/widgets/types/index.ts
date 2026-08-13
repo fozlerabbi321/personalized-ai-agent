@@ -1,47 +1,59 @@
-export interface OHLCItem {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume?: number;
+// ── Nova AI Widget Payload Types ──────────────────────────────────────────────
+
+export interface QuizOption {
+  id: string;
+  text: string;
 }
 
-export interface CandlestickWidgetPayload {
-  widget_type: "candlestick_chart";
-  ticker: string;
-  title: string;
-  current_price: number;
-  change: number;
-  change_pct: number;
-  seven_day_high: number;
-  seven_day_low: number;
-  data: OHLCItem[];
-  metric?: {
-    label: string;
-    value: string;
-    delta: string;
-    sentiment?: "positive" | "negative" | "neutral";
-  };
+export interface QuizWidgetPayload {
+  widget_type: "quiz_widget";
+  subject: string;
+  difficulty: string;
+  question_no: number;
+  question: string;
+  question_type: "mcq" | "true_false" | "fill_blank" | "short_answer";
+  options: QuizOption[];
+  correct_answer: string;
+  explanation: string;
+  xp_reward: number;
 }
 
-export interface MetricCardWidgetPayload {
-  widget_type: "metric_card";
-  label: string;
-  value: string;
-  delta?: string;
-  sentiment?: "positive" | "negative" | "neutral";
-  subtitle?: string;
+export interface KeyTerm {
+  term: string;
+  definition: string;
 }
 
-export interface DataTableWidgetPayload {
-  widget_type: "data_table";
-  title?: string;
-  columns: string[];
-  rows: Array<Record<string, string | number>>;
+export interface ConceptTablePayload {
+  widget_type: "concept_table";
+  topic: string;
+  definition: string;
+  analogy: string;
+  key_terms: KeyTerm[];
+  example_code: string;
+  code_language: string;
+  related_topics: string[];
+}
+
+export interface RoadmapWeek {
+  week: number;
+  topic: string;
+  subtopics: string[];
+  hours: number;
+  resources: string[];
+}
+
+export interface StudyRoadmapPayload {
+  widget_type: "study_roadmap";
+  subject: string;
+  skill_level: string;
+  duration_weeks: number;
+  total_hours: number;
+  daily_hours: number;
+  weeks: RoadmapWeek[];
+  milestone: string;
 }
 
 export type WidgetPayload =
-  | CandlestickWidgetPayload
-  | MetricCardWidgetPayload
-  | DataTableWidgetPayload;
+  | QuizWidgetPayload
+  | ConceptTablePayload
+  | StudyRoadmapPayload;

@@ -125,4 +125,50 @@ async def _create_app_tables(conn: asyncpg.Connection) -> None:
         );
         CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id
             ON chat_messages(session_id);
+
+        -- ── Nova AI: Learning Domain Tables ────────────────────────────────────
+
+        -- Extended learning profile per user
+        CREATE TABLE IF NOT EXISTS user_learning_profiles (
+            id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            subjects        TEXT[]      NOT NULL DEFAULT '{}',
+            skill_level     VARCHAR(20) NOT NULL DEFAULT 'beginner',
+            preferred_lang  VARCHAR(10) NOT NULL DEFAULT 'en',
+            total_xp        INT         NOT NULL DEFAULT 0,
+            streak_days     INT         NOT NULL DEFAULT 0,
+            last_active_at  TIMESTAMPTZ,
+            created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(user_id)
+        );
+
+        -- Quiz attempt history
+        CREATE TABLE IF NOT EXISTS quiz_attempts (
+            id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            subject         VARCHAR(100) NOT NULL,
+            difficulty      VARCHAR(20),
+            question_text   TEXT        NOT NULL,
+            user_answer     VARCHAR(10),
+            correct_answer  VARCHAR(10) NOT NULL,
+            is_correct      BOOLEAN     NOT NULL DEFAULT FALSE,
+            xp_earned       INT         NOT NULL DEFAULT 0,
+            attempted_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user_id
+            ON quiz_attempts(user_id);
+
+        -- Study session logs
+        CREATE TABLE IF NOT EXISTS study_sessions (
+            id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            subject         VARCHAR(100) NOT NULL,
+            duration_min    INT,
+            topics_covered  TEXT[]      NOT NULL DEFAULT '{}',
+            notes           TEXT,
+            session_date    DATE        NOT NULL DEFAULT CURRENT_DATE
+        );
+        CREATE INDEX IF NOT EXISTS idx_study_sessions_user_id
+            ON study_sessions(user_id);
     """)

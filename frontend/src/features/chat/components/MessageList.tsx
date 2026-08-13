@@ -40,7 +40,7 @@ export function MessageList({
           <Sparkles className="h-7 w-7" />
         </div>
         <h2 className="text-xl font-bold text-white tracking-tight mb-2">
-          How can Athena help you today?
+          How can Nova help you today?
         </h2>
         <p className="text-xs text-gray-400 leading-relaxed mb-8">
           Ask Bitcoin & crypto questions, analyze live market trends with interactive charts,

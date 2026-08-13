@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 """
-personalized_ai_agent — Database Seeder
-========================================
-Populates PostgreSQL with dummy users, sessions, and messages
-so you can test the full system immediately after ``make dev``.
+Nova AI — Database Seeder
+==========================
+Populates PostgreSQL with dummy users, learning profiles, and chat sessions
+(pre-loaded with Nova SDUI widget messages) for immediate testing.
 
 Usage:
-    make seed                                   ← (recommended, runs inside Docker)
+    make seed
     docker-compose exec backend python seeder.py
-    python seeder.py                            ← (local, ensure DATABASE_URL is set)
 
-Test credentials created:
-    alice@example.com / Password123!
-    bob@example.com   / Password123!
+Test credentials:
+    alice@example.com / Password123!   (intermediate, Python + DSA learner)
+    bob@example.com   / Password123!   (beginner, JavaScript learner)
 """
 from __future__ import annotations
 
@@ -34,138 +33,114 @@ DATABASE_URL: str = os.getenv(
 # ─── Seed fixtures ─────────────────────────────────────────────────────────────
 
 USERS = [
-    {"email": "alice@example.com", "password": "Password123!"},
-    {"email": "bob@example.com",   "password": "Password123!"},
+    {"email": "alice@example.com", "password": "Password123!", "profile": {
+        "subjects":       ["Python", "Data Structures", "Algorithms"],
+        "skill_level":    "intermediate",
+        "preferred_lang": "en",
+        "total_xp":       340,
+        "streak_days":    7,
+    }},
+    {"email": "bob@example.com", "password": "Password123!", "profile": {
+        "subjects":       ["JavaScript", "React"],
+        "skill_level":    "beginner",
+        "preferred_lang": "en",
+        "total_xp":       80,
+        "streak_days":    2,
+    }},
 ]
 
-MOCK_WIDGET = {
-    "widget_type":    "candlestick_chart",
-    "ticker":         "AAPL",
-    "title":          "AAPL — 7-Day Price Chart",
-    "current_price":  187.42,
-    "change":          4.32,
-    "change_pct":      2.36,
-    "seven_day_high": 189.10,
-    "seven_day_low":  182.50,
-    "data": [
-        {"date": "2025-07-28", "open": 183.10, "high": 184.50, "low": 182.00, "close": 183.80, "volume": 45_000_000},
-        {"date": "2025-07-29", "open": 183.80, "high": 186.00, "low": 183.20, "close": 185.50, "volume": 52_000_000},
-        {"date": "2025-07-30", "open": 185.50, "high": 187.00, "low": 184.80, "close": 186.20, "volume": 48_000_000},
-        {"date": "2025-07-31", "open": 186.20, "high": 188.00, "low": 185.50, "close": 187.00, "volume": 61_000_000},
-        {"date": "2025-08-01", "open": 187.00, "high": 189.10, "low": 186.00, "close": 188.30, "volume": 55_000_000},
-        {"date": "2025-08-04", "open": 188.30, "high": 189.00, "low": 186.90, "close": 187.80, "volume": 42_000_000},
-        {"date": "2025-08-05", "open": 187.80, "high": 188.50, "low": 186.50, "close": 187.42, "volume": 38_000_000},
+MOCK_QUIZ_WIDGET = {
+    "widget_type":    "quiz_widget",
+    "subject":        "Python",
+    "difficulty":     "intermediate",
+    "question_no":    1,
+    "question":       "What does the `@property` decorator do in Python?",
+    "question_type":  "mcq",
+    "options": [
+        {"id": "A", "text": "Creates a class attribute"},
+        {"id": "B", "text": "Makes a method callable as an attribute"},
+        {"id": "C", "text": "Caches the function result"},
+        {"id": "D", "text": "Marks a method as static"},
     ],
-    "metric": {
-        "label":     "Current Price",
-        "value":     "$187.42",
-        "delta":     "+2.36%",
-        "sentiment": "positive",
-    },
+    "correct_answer": "B",
+    "explanation":    "@property turns a method into a getter, allowing you to access it like `obj.name` instead of `obj.name()`.",
+    "xp_reward":      10,
+}
+
+MOCK_CONCEPT_WIDGET = {
+    "widget_type":   "concept_table",
+    "topic":         "Recursion",
+    "definition":    "A function that calls itself to solve a smaller version of the same problem.",
+    "analogy":       "Like Russian nesting dolls — each doll contains a smaller version until you reach the smallest one (the base case).",
+    "key_terms": [
+        {"term": "Base Case",      "definition": "The condition that stops recursion (prevents infinite loop)"},
+        {"term": "Recursive Case", "definition": "The part where the function calls itself with a simpler input"},
+        {"term": "Call Stack",     "definition": "Memory structure that tracks active function calls"},
+    ],
+    "example_code":   "def factorial(n):\n    if n == 0:     # base case\n        return 1\n    return n * factorial(n - 1)  # recursive case",
+    "code_language":  "Python",
+    "related_topics": ["Call Stack", "Dynamic Programming", "Tree Traversal", "Memoization"],
+}
+
+MOCK_ROADMAP_WIDGET = {
+    "widget_type":    "study_roadmap",
+    "subject":        "Python",
+    "skill_level":    "beginner",
+    "duration_weeks": 6,
+    "total_hours":    48,
+    "daily_hours":    1.1,
+    "milestone":      "Complete Python beginner curriculum",
+    "weeks": [
+        {"week": 1, "topic": "Python Basics",         "subtopics": ["Variables & Types", "Control Flow", "Functions"],               "hours": 8,  "resources": ["Python.org Tutorial", "Automate the Boring Stuff Ch.1-3"]},
+        {"week": 2, "topic": "Data Structures",       "subtopics": ["Lists", "Dicts", "Tuples", "Sets"],                             "hours": 8,  "resources": ["Real Python — Data Structures"]},
+        {"week": 3, "topic": "OOP in Python",         "subtopics": ["Classes", "Inheritance", "Encapsulation", "Dunder Methods"],    "hours": 10, "resources": ["Corey Schafer OOP Series"]},
+        {"week": 4, "topic": "File I/O & Exceptions", "subtopics": ["File handling", "Try/except", "Context managers"],              "hours": 6,  "resources": ["Python Docs: Errors & Exceptions"]},
+        {"week": 5, "topic": "Modules & Packages",    "subtopics": ["Imports", "pip", "Virtual Environments"],                       "hours": 6,  "resources": ["Python Packaging User Guide"]},
+        {"week": 6, "topic": "Async & Concurrency",   "subtopics": ["asyncio", "async/await", "Coroutines", "Event Loop"],           "hours": 10, "resources": ["Python asyncio Docs", "Real Python Async IO Guide"]},
+    ],
 }
 
 SESSIONS_TEMPLATE = [
     {
-        "title": "AAPL Stock Analysis",
+        "title": "Python Quiz Session",
         "messages": [
+            {"role": "human", "content": "Quiz me on Python intermediate level"},
             {
-                "role":    "human",
-                "content": "What is the AAPL stock price today?",
+                "role": "assistant",
+                "content": "Let's put your Python knowledge to the test! 🧠 Here's an intermediate question on Python decorators — this is a concept that separates good Python devs from great ones. Give it your best shot!",
+                "widget_json": MOCK_QUIZ_WIDGET,
             },
+            {"role": "human", "content": "The answer is B"},
             {
-                "role":        "assistant",
-                "content":     (
-                    "AAPL is currently trading at **$187.42**, up **+2.36%** over the last 7 days. "
-                    "The stock has shown steady upward momentum with a 7-day high of $189.10. "
-                    "Here's the interactive chart for your reference."
-                ),
-                "widget_json": MOCK_WIDGET,
-            },
-            {
-                "role":    "human",
-                "content": "What about NVDA?",
-            },
-            {
-                "role":    "assistant",
-                "content": (
-                    "NVDA is trading at approximately **$882.15**, with a **+3.1%** gain over the past 7 days. "
-                    "The stock has benefited from strong AI-driven demand for its GPU products. "
-                    "The 7-day high was $891.00 and the low was $851.00."
-                ),
-                "widget_json": {
-                    **MOCK_WIDGET,
-                    "ticker": "NVDA",
-                    "title":  "NVDA — 7-Day Price Chart",
-                    "current_price": 882.15,
-                    "change":         26.5,
-                    "change_pct":      3.1,
-                },
+                "role": "assistant",
+                "content": "⭐ Correct! You earned **+10 XP**!\n\n**@property** is one of Python's most elegant features. It lets you define computed attributes — properties that look like regular attributes but execute logic when accessed.\n\n```python\nclass Circle:\n    def __init__(self, radius):\n        self._radius = radius\n    \n    @property\n    def area(self):\n        return 3.14159 * self._radius ** 2\n\nc = Circle(5)\nprint(c.area)  # Looks like an attribute, runs the method\n```\n\nWant another question or should we dive deeper into decorators?",
             },
         ],
     },
     {
-        "title": "Python async/await explained",
+        "title": "Recursion Explained",
         "messages": [
+            {"role": "human", "content": "Explain recursion to me"},
             {
-                "role":    "human",
-                "content": "Can you explain async/await in Python?",
+                "role": "assistant",
+                "content": "Great question! Recursion is one of those concepts that feels mind-bending at first but becomes intuitive once it clicks.\n\n**Simple definition:** A recursive function is one that calls itself to solve a smaller version of the same problem.\n\n**The key insight** — every recursive solution needs two things:\n1. **Base case**: When to stop (prevents infinite loops)\n2. **Recursive case**: How to reduce the problem each time\n\nThink of it like Russian nesting dolls — you keep opening dolls until you hit the smallest one (base case).\n\nHere's the classic factorial example:\n```python\ndef factorial(n):\n    if n == 0:        # base case\n        return 1\n    return n * factorial(n - 1)  # recursive case\n```\n\n**Quick question:** What would happen if we removed the `if n == 0` check? 🤔",
+                "widget_json": MOCK_CONCEPT_WIDGET,
             },
+            {"role": "human", "content": "It would run forever?"},
             {
-                "role":    "assistant",
-                "content": (
-                    "**async/await** in Python enables writing concurrent code without threads.\n\n"
-                    "- `async def` defines a **coroutine** — a function that can be paused and resumed.\n"
-                    "- `await` suspends the current coroutine until the awaited operation completes.\n"
-                    "- The event loop (`asyncio.run()`) orchestrates all concurrent coroutines.\n\n"
-                    "This is ideal for **I/O-bound** tasks like network requests, DB queries, and file I/O "
-                    "where you'd otherwise block waiting for responses."
-                ),
-            },
-            {
-                "role":    "human",
-                "content": "Show me a practical example.",
-            },
-            {
-                "role":    "assistant",
-                "content": (
-                    "```python\nimport asyncio\nimport httpx\n\n"
-                    "async def fetch(url: str) -> dict:\n"
-                    "    async with httpx.AsyncClient() as client:\n"
-                    "        response = await client.get(url)\n"
-                    "        return response.json()\n\n"
-                    "async def main():\n"
-                    "    # Run two requests concurrently\n"
-                    "    results = await asyncio.gather(\n"
-                    "        fetch('https://api.github.com/users/torvalds'),\n"
-                    "        fetch('https://api.github.com/users/gvanrossum'),\n"
-                    "    )\n"
-                    "    for user in results:\n"
-                    "        print(user['login'], user['public_repos'])\n\n"
-                    "asyncio.run(main())\n```\n\n"
-                    "Both requests run **concurrently** — total time ≈ max(t1, t2), not t1 + t2."
-                ),
+                "role": "assistant",
+                "content": "Exactly right! 🎯 Without the base case, the function would call itself infinitely — until Python raises a **RecursionError** (Python limits the call stack to ~1000 frames by default).\n\n```python\nfact(5) → fact(4) → fact(3) → fact(2) → fact(1) → fact(0) ✅ STOP\n```\n\nThis is why the base case is non-negotiable in any recursive function.\n\n**Next challenge:** Can you write a recursive function that calculates the sum of a list? `sum_list([1, 2, 3, 4])` → `10`",
             },
         ],
     },
     {
-        "title": "Conversation Summary",
+        "title": "Python Study Roadmap",
         "messages": [
+            {"role": "human", "content": "Give me a 6-week Python study roadmap for beginners"},
             {
-                "role":    "human",
-                "content": "Can you summarize our conversation?",
-            },
-            {
-                "role":    "assistant",
-                "content": (
-                    "Here's a summary of what we covered:\n\n"
-                    "**📈 Financial Data**\n"
-                    "- AAPL is trading at $187.42 (+2.36% / 7 days)\n"
-                    "- NVDA is trading at $882.15 (+3.1% / 7 days)\n\n"
-                    "**🐍 Python Async/Await**\n"
-                    "- `async def` defines coroutines; `await` suspends execution\n"
-                    "- Best for I/O-bound concurrency (HTTP requests, DB calls)\n"
-                    "- `asyncio.gather()` runs multiple coroutines concurrently"
-                ),
+                "role": "assistant",
+                "content": "Awesome choice — Python is one of the most powerful languages to start with, and 6 weeks is the perfect commitment to build real foundational skills! 🚀\n\nThis roadmap follows the **fundamentals-first philosophy**: we don't rush to advanced topics until the basics are rock-solid. Each week builds on the last, and by week 6, you'll be writing async Python code like a pro.\n\n**Your mission:** 1-2 hours per day, 6 weeks. Let's go!",
+                "widget_json": MOCK_ROADMAP_WIDGET,
             },
         ],
     },
@@ -174,12 +149,7 @@ SESSIONS_TEMPLATE = [
 
 # ─── Helpers ───────────────────────────────────────────────────────────────────
 
-
 async def _ensure_tables(conn: asyncpg.Connection) -> None:
-    """
-    Create application tables if they don't exist.
-    Schema definition mirrors app/infrastructure/database/connection.py (single source).
-    """
     await conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -204,9 +174,43 @@ async def _ensure_tables(conn: asyncpg.Connection) -> None:
             created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
         CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id ON chat_messages(session_id);
+
+        CREATE TABLE IF NOT EXISTS user_learning_profiles (
+            id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            subjects        TEXT[]      NOT NULL DEFAULT '{}',
+            skill_level     VARCHAR(20) NOT NULL DEFAULT 'beginner',
+            preferred_lang  VARCHAR(10) NOT NULL DEFAULT 'en',
+            total_xp        INT         NOT NULL DEFAULT 0,
+            streak_days     INT         NOT NULL DEFAULT 0,
+            last_active_at  TIMESTAMPTZ,
+            created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            UNIQUE(user_id)
+        );
+        CREATE TABLE IF NOT EXISTS quiz_attempts (
+            id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            subject         VARCHAR(100) NOT NULL,
+            difficulty      VARCHAR(20),
+            question_text   TEXT        NOT NULL,
+            user_answer     VARCHAR(10),
+            correct_answer  VARCHAR(10) NOT NULL,
+            is_correct      BOOLEAN     NOT NULL DEFAULT FALSE,
+            xp_earned       INT         NOT NULL DEFAULT 0,
+            attempted_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+        CREATE TABLE IF NOT EXISTS study_sessions (
+            id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+            user_id         UUID        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            subject         VARCHAR(100) NOT NULL,
+            duration_min    INT,
+            topics_covered  TEXT[]      NOT NULL DEFAULT '{}',
+            notes           TEXT,
+            session_date    DATE        NOT NULL DEFAULT CURRENT_DATE
+        );
     """)
     print("  ✅ Tables verified")
-
 
 
 async def _seed_user(conn: asyncpg.Connection, email: str, password: str) -> str:
@@ -214,7 +218,6 @@ async def _seed_user(conn: asyncpg.Connection, email: str, password: str) -> str
     if existing:
         print(f"  ℹ️  User {email} already exists")
         return str(existing["id"])
-
     user_id = str(uuid.uuid4())
     salt = bcrypt.gensalt(rounds=12)
     hashed = bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
@@ -226,32 +229,44 @@ async def _seed_user(conn: asyncpg.Connection, email: str, password: str) -> str
     return user_id
 
 
+async def _seed_learning_profile(conn: asyncpg.Connection, user_id: str, profile: dict) -> None:
+    existing = await conn.fetchrow("SELECT id FROM user_learning_profiles WHERE user_id = $1", user_id)
+    if existing:
+        print("  ℹ️  Learning profile already exists")
+        return
+    await conn.execute(
+        """
+        INSERT INTO user_learning_profiles
+            (user_id, subjects, skill_level, preferred_lang, total_xp, streak_days, last_active_at)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW())
+        """,
+        user_id,
+        profile["subjects"],
+        profile["skill_level"],
+        profile["preferred_lang"],
+        profile["total_xp"],
+        profile["streak_days"],
+    )
+    print(f"  ✅ Learning profile: {profile['skill_level']} · XP {profile['total_xp']} · 🔥 {profile['streak_days']} days")
+
+
 async def _seed_sessions(conn: asyncpg.Connection, user_id: str) -> None:
     for idx, session in enumerate(SESSIONS_TEMPLATE):
         session_id = str(uuid.uuid4())
         created_at = datetime.now(timezone.utc) - timedelta(days=len(SESSIONS_TEMPLATE) - idx)
-
         await conn.execute(
             "INSERT INTO chat_sessions (id, user_id, title, created_at, updated_at) VALUES ($1, $2, $3, $4, $4)",
             session_id, user_id, session["title"], created_at,
         )
-
         for msg_idx, msg in enumerate(session["messages"]):
             msg_time = created_at + timedelta(minutes=msg_idx * 3)
             wj = msg.get("widget_json")
             await conn.execute(
-                """
-                INSERT INTO chat_messages (id, session_id, role, content, widget_json, created_at)
-                VALUES ($1, $2, $3, $4, $5, $6)
-                """,
-                str(uuid.uuid4()),
-                session_id,
-                msg["role"],
-                msg["content"],
-                json.dumps(wj) if wj else None,
-                msg_time,
+                """INSERT INTO chat_messages (id, session_id, role, content, widget_json, created_at)
+                   VALUES ($1, $2, $3, $4, $5, $6)""",
+                str(uuid.uuid4()), session_id, msg["role"], msg["content"],
+                json.dumps(wj) if wj else None, msg_time,
             )
-
         print(f"  ✅ Session '{session['title']}' — {len(session['messages'])} messages")
 
 
@@ -259,10 +274,9 @@ async def _seed_sessions(conn: asyncpg.Connection, user_id: str) -> None:
 
 async def main() -> None:
     print()
-    print("🌱  personalized_ai_agent — Database Seeder")
+    print("🎓  Nova AI — Database Seeder")
     print("─" * 48)
-    print(f"📡  Connecting to PostgreSQL...")
-
+    print("📡  Connecting to PostgreSQL...")
     conn = await asyncpg.connect(dsn=DATABASE_URL)
     try:
         print("\n📋  Ensuring tables exist...")
@@ -271,7 +285,9 @@ async def main() -> None:
         for user_data in USERS:
             print(f"\n👤  Seeding: {user_data['email']}")
             user_id = await _seed_user(conn, user_data["email"], user_data["password"])
-            await _seed_sessions(conn, user_id)
+            await _seed_learning_profile(conn, user_id, user_data["profile"])
+            if user_data["email"] == "alice@example.com":
+                await _seed_sessions(conn, user_id)
 
         print()
         print("─" * 48)
@@ -282,11 +298,11 @@ async def main() -> None:
         for u in USERS:
             print(f"   Email    : {u['email']}")
             print(f"   Password : {u['password']}")
+            print(f"   Level    : {u['profile']['skill_level']} · XP {u['profile']['total_xp']}")
             print()
         print("🚀  Login  → POST http://localhost:8000/api/auth/login")
         print("📖  Docs   → http://localhost:8000/docs")
         print()
-
     finally:
         await conn.close()
 
